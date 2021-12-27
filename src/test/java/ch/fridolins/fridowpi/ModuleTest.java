@@ -1,5 +1,6 @@
 package ch.fridolins.fridowpi;
 
+import ch.fridolins.fridowpi.module.Module;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

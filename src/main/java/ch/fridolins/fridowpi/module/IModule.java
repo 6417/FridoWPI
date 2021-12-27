@@ -1,4 +1,4 @@
-package ch.fridolins.fridowpi;
+package ch.fridolins.fridowpi.module;
 
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
