@@ -1,12 +1,12 @@
 package ch.fridolins.fridowpi;
 
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ModuleTest {
     TestModule module;
@@ -53,5 +53,22 @@ public class ModuleTest {
     public void getAllSubModulesWillReturnAllSubModules() {
         var subModules = module.getAllSubModules();
         assertEquals(111, subModules.size());
+    }
+
+    private boolean checkPeriodicCounter(int expected) {
+        AtomicBoolean result = new AtomicBoolean(true);
+        module.getAllSubModules().forEach((mod) -> {
+            result.set(result.get() && ((TestModule) mod).periodicCounter == expected);
+        });
+        return result.get();
+    }
+
+    @Test
+    public void periodicWillAllSubModulesBeCalled() {
+        assertTrue(checkPeriodicCounter(0));
+        for (int i = 1; i <= 10; i++) {
+            CommandScheduler.getInstance().run();
+            assertTrue(checkPeriodicCounter(i));
+        }
     }
 }
