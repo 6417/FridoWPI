@@ -13,16 +13,17 @@ public class ModuleTest {
 
     public static class TestModule extends Module {
         public int periodicCounter = 0;
-        public final int id;
 
-        public TestModule(int id) {
-            this.id = id;
+        public TestModule(boolean initSubModules) {
+            if (initSubModules)
+                for (int i = 1; i <= 10; i++)
+                    registerSubmodule(new TestModule(false));
         }
 
         public TestModule() {
-            this.id = 0;
             for (int i = 1; i <= 10; i++)
-                registerSubmodule(new TestModule(i));
+                registerSubmodule(new TestModule(true));
+            registerSubmodule(new TestModule(false));
         }
 
         @Override
@@ -36,9 +37,8 @@ public class ModuleTest {
         module = new TestModule();
     }
 
-    @Test()
+    @Test
     public void registerSubModuleWillDieWhenThisIsASubModuleOfItsSelf() {
-        var subModules = module.getAllSubModules();
         class FailingModule extends Module {
             public FailingModule() {
                 registerSubmodule(this);
@@ -46,5 +46,12 @@ public class ModuleTest {
         }
 
         assertThrows(AssertionError.class, FailingModule::new);
+        assertThrows(AssertionError.class, () -> new FailingModule().getAllSubModules());
+    }
+
+    @Test
+    public void getAllSubModulesWillReturnAllSubModules() {
+        var subModules = module.getAllSubModules();
+        assertEquals(111, subModules.size());
     }
 }
