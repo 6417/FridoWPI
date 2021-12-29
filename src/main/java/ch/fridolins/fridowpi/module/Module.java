@@ -1,9 +1,13 @@
 package ch.fridolins.fridowpi.module;
 
+import ch.fridolins.fridowpi.base.Activatable;
+import ch.fridolins.fridowpi.base.Initializable;
+import ch.fridolins.fridowpi.base.OptionalInitializable;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Module extends ModuleBase {
+public class Module extends ModuleBase implements OptionalInitializable {
     private Set<IModule> submodules = new HashSet<>();
 
     @Override
@@ -29,5 +33,21 @@ public class Module extends ModuleBase {
                 .collect(Collectors.toSet());
         result.addAll(submodules);
         return result;
+    }
+
+    @Override
+    public boolean isActivated() {
+        return true;
+    }
+
+
+    @Override
+    public void init() {
+
+    }
+
+    @Override
+    public boolean isInitialized() {
+        return false;
     }
 }
