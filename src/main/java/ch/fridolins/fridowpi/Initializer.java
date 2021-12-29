@@ -1,5 +1,6 @@
 package ch.fridolins.fridowpi;
 
+import ch.fridolins.fridowpi.base.Activatable;
 import ch.fridolins.fridowpi.base.Initialisable;
 import ch.fridolins.fridowpi.base.InitializerBase;
 import ch.fridolins.fridowpi.base.OptionalInitialisable;
@@ -50,14 +51,15 @@ public class Initializer implements InitializerBase {
     }
 
     @Override
-    public void addOptionalInitialisable(OptionalInitialisable... initialisable) {
-        Collections.addAll(toInitialize, initialisable);
-    }
-
-    @Override
     public void addInitialisable(Initialisable... initialisables) {
         Arrays.stream(initialisables)
+                .filter((ini) -> !(ini instanceof Activatable))
                 .map(this::initialisableToOptionalInitialize)
+                .forEach(toInitialize::add);
+
+        Arrays.stream(initialisables)
+                .filter((ini) -> (ini instanceof Activatable))
+                .map((ini) -> (OptionalInitialisable) ini)
                 .forEach(toInitialize::add);
     }
 

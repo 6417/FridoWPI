@@ -134,8 +134,8 @@ public class InitializerTest {
         OptionalInitialisable disabled = new TestOptionalInitialisable(false);
         OptionalInitialisable enabled = new TestOptionalInitialisable(true);
 
-        Initializer.getInstance().addOptionalInitialisable(disabled);
-        Initializer.getInstance().addOptionalInitialisable(enabled);
+        Initializer.getInstance().addInitialisable(disabled);
+        Initializer.getInstance().addInitialisable(enabled);
         Initializer.getInstance().init();
 
         assertTrue(enabled.isInitialized());
@@ -147,7 +147,7 @@ public class InitializerTest {
     void optionalInitialisedReactivating() {
         TestOptionalInitialisable testOptInit = new TestOptionalInitialisable(false);
 
-        Initializer.getInstance().addOptionalInitialisable(testOptInit);
+        Initializer.getInstance().addInitialisable(testOptInit);
         Initializer.getInstance().init();
 
         assertTrue(Initializer.getInstance().isInitialized());

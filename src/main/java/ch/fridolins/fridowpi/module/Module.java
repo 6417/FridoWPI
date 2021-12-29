@@ -10,7 +10,7 @@ public class Module extends ModuleBase implements OptionalInitialisable {
     private Set<IModule> submodules = new HashSet<>();
 
     protected Module() {
-        Initializer.getInstance().addOptionalInitialisable(this);
+        Initializer.getInstance().addInitialisable(this);
     }
 
     @Override
