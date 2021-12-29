@@ -8,6 +8,9 @@ import java.util.stream.Collectors;
 public class Module extends ModuleBase implements OptionalInitialisable {
     private Set<IModule> submodules = new HashSet<>();
 
+    protected Module() {
+    }
+
     @Override
     protected void registerSubmodule(IModule module) {
         assert getAllSubModules().stream().noneMatch((other) -> this == other) && module != this : "'this' can not be a submodule of its self";
