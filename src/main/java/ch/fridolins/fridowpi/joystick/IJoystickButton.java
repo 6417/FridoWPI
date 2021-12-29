@@ -1,5 +1,5 @@
 package ch.fridolins.fridowpi.joystick;
 
-public interface JoystickButton {
+public interface IJoystickButton {
     int getButtonId();
 }
