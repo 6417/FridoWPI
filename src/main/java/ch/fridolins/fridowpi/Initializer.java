@@ -18,6 +18,10 @@ public class Initializer implements InitializerBase {
     private static InitializerBase instance;
     private static Supplier<InitializerBase> factory = Initializer::new;
 
+    public static void reset() {
+        instance = null;
+    }
+
     public static void setFactory(Supplier<InitializerBase> fact) {
         assert instance == null : "instance has already been initialized";
         factory = fact;
