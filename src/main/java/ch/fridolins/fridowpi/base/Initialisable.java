@@ -1,6 +1,6 @@
 package ch.fridolins.fridowpi.base;
 
-public interface Initializable {
+public interface Initialisable {
     void init();
     boolean isInitialized();
 }

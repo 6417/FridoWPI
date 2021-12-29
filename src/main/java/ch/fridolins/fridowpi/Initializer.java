@@ -1,9 +1,11 @@
 package ch.fridolins.fridowpi;
 
+import ch.fridolins.fridowpi.base.Initialisable;
 import ch.fridolins.fridowpi.base.InitializerBase;
-import ch.fridolins.fridowpi.base.OptionalInitializable;
+import ch.fridolins.fridowpi.base.OptionalInitialisable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
@@ -27,25 +29,53 @@ public class Initializer implements InitializerBase {
         return instance;
     }
 
-    private List<OptionalInitializable> toInitialize;
+    private List<OptionalInitialisable> toInitialize;
 
     @Override
     public void init() {
         toInitialize.stream()
-                .filter((initializable) -> !initializable.isInitialized())
-                .filter(OptionalInitializable::isActivated)
-                .forEach(OptionalInitializable::init);
+                .filter((initialisable) -> !initialisable.isInitialized())
+                .filter(OptionalInitialisable::isActivated)
+                .forEach(OptionalInitialisable::init);
     }
 
     @Override
     public boolean isInitialized() {
         return toInitialize.stream()
-                .filter(OptionalInitializable::isActivated)
-                .allMatch(OptionalInitializable::isInitialized);
+                .filter(OptionalInitialisable::isActivated)
+                .allMatch(OptionalInitialisable::isInitialized);
     }
 
     @Override
-    public void addInitializable(OptionalInitializable... initializable) {
-        Collections.addAll(toInitialize, initializable);
+    public void addOptionalInitialisable(OptionalInitialisable... initialisable) {
+        Collections.addAll(toInitialize, initialisable);
+    }
+
+    @Override
+    public void addInitialisable(Initialisable... initialisables) {
+        Arrays.stream(initialisables)
+                .map(this::initialisableToOptionalInitialize)
+                .forEach(toInitialize::add);
+    }
+
+    private OptionalInitialisable initialisableToOptionalInitialize(Initialisable initialisable) {
+        return new OptionalInitialisable() {
+            private final Initialisable initialisableProxy = initialisable;
+
+            @Override
+            public boolean isActivated() {
+                return true;
+            }
+
+            @Override
+            public void init() {
+                initialisableProxy.init();
+            }
+
+            @Override
+            public boolean isInitialized() {
+                return initialisableProxy.isInitialized();
+            }
+        };
     }
 }

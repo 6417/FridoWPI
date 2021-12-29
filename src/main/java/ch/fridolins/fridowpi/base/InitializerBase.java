@@ -1,8 +1,6 @@
 package ch.fridolins.fridowpi.base;
 
-import ch.fridolins.fridowpi.base.Initializable;
-import ch.fridolins.fridowpi.base.OptionalInitializable;
-
-public interface InitializerBase extends Initializable {
-    void addInitializable(OptionalInitializable... initializable);
+public interface InitializerBase extends Initialisable {
+    void addOptionalInitialisable(OptionalInitialisable... initialisables);
+    void addInitialisable(Initialisable... initialisables);
 }

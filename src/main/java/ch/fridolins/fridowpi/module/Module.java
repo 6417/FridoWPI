@@ -1,13 +1,11 @@
 package ch.fridolins.fridowpi.module;
 
-import ch.fridolins.fridowpi.base.Activatable;
-import ch.fridolins.fridowpi.base.Initializable;
-import ch.fridolins.fridowpi.base.OptionalInitializable;
+import ch.fridolins.fridowpi.base.OptionalInitialisable;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Module extends ModuleBase implements OptionalInitializable {
+public class Module extends ModuleBase implements OptionalInitialisable {
     private Set<IModule> submodules = new HashSet<>();
 
     @Override
