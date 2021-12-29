@@ -4,15 +4,12 @@ import ch.fridolins.fridowpi.base.Initialisable;
 import ch.fridolins.fridowpi.base.InitializerBase;
 import ch.fridolins.fridowpi.base.OptionalInitialisable;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.function.Supplier;
 
 public class Initializer implements InitializerBase {
     private Initializer() {
-        toInitialize = new ArrayList<>();
+        toInitialize = new HashSet<>();
     }
 
     private static InitializerBase instance;
@@ -33,7 +30,7 @@ public class Initializer implements InitializerBase {
         return instance;
     }
 
-    private List<OptionalInitialisable> toInitialize;
+    private Set<OptionalInitialisable> toInitialize;
 
     @Override
     public void init() {
@@ -45,6 +42,8 @@ public class Initializer implements InitializerBase {
 
     @Override
     public boolean isInitialized() {
+        if (toInitialize.size() == 0)
+            return true;
         return toInitialize.stream()
                 .filter(OptionalInitialisable::isActivated)
                 .allMatch(OptionalInitialisable::isInitialized);

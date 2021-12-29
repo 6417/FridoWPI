@@ -1,5 +1,6 @@
 package ch.fridolins.fridowpi.module;
 
+import ch.fridolins.fridowpi.Initializer;
 import ch.fridolins.fridowpi.base.OptionalInitialisable;
 
 import java.util.*;
@@ -9,6 +10,7 @@ public class Module extends ModuleBase implements OptionalInitialisable {
     private Set<IModule> submodules = new HashSet<>();
 
     protected Module() {
+        Initializer.getInstance().addOptionalInitialisable(this);
     }
 
     @Override
@@ -42,13 +44,14 @@ public class Module extends ModuleBase implements OptionalInitialisable {
     }
 
 
+    private boolean initialized = false;
     @Override
     public void init() {
-
+        initialized = true;
     }
 
     @Override
     public boolean isInitialized() {
-        return false;
+        return initialized;
     }
 }
