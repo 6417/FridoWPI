@@ -1,7 +1,7 @@
 package ch.fridolins.fridowpi;
 
 import ch.fridolins.fridowpi.base.Initialisable;
-import ch.fridolins.fridowpi.base.InitializerBase;
+import ch.fridolins.fridowpi.base.IInitializer;
 import ch.fridolins.fridowpi.base.OptionalInitialisable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,12 +39,12 @@ public class InitializerTest {
 
     @Test
     void resetWillReturnNewInstance() {
-        InitializerBase beforeReset1 = Initializer.getInstance();
-        InitializerBase beforeReset2 = Initializer.getInstance();
+        IInitializer beforeReset1 = Initializer.getInstance();
+        IInitializer beforeReset2 = Initializer.getInstance();
         assertSame(beforeReset1, beforeReset2);
         Initializer.reset();
-        InitializerBase afterReset1 = Initializer.getInstance();
-        InitializerBase afterReset2 = Initializer.getInstance();
+        IInitializer afterReset1 = Initializer.getInstance();
+        IInitializer afterReset2 = Initializer.getInstance();
         assertSame(afterReset1, afterReset2);
         assertNotSame(beforeReset1, afterReset1);
     }

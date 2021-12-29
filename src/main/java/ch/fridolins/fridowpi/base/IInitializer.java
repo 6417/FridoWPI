@@ -1,5 +1,5 @@
 package ch.fridolins.fridowpi.base;
 
-public interface InitializerBase extends Initialisable {
+public interface IInitializer extends Initialisable {
     void addInitialisable(Initialisable... initialisables);
 }
