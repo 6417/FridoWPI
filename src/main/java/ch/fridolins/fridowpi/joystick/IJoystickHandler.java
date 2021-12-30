@@ -8,4 +8,5 @@ import java.util.Map;
 public interface IJoystickHandler extends Initialisable {
     void bindAll(Map<IJoystickButton, Command> bindings);
     void bind(IJoystickButton button, Command command);
+    void bind(JoystickBindable bindable);
 }

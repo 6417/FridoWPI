@@ -1,5 +1,6 @@
 package ch.fridolins.fridowpi.joystick;
 
+import ch.fridolins.fridowpi.Initializer;
 import edu.wpi.first.wpilibj2.command.Command;
 
 import java.util.Map;
@@ -15,7 +16,7 @@ public class JoystickHandler implements IJoystickHandler {
     }
 
     protected JoystickHandler() {
-
+        Initializer.getInstance().addInitialisable(this);
     }
 
     public static IJoystickHandler getInstance() {
@@ -23,6 +24,12 @@ public class JoystickHandler implements IJoystickHandler {
             instance = factory.get();
         return instance;
     }
+
+    public static void reset() {
+        Initializer.getInstance().removeInitialisable(getInstance());
+        instance = null;
+    }
+
 
     @Override
     public void init() {
@@ -42,5 +49,10 @@ public class JoystickHandler implements IJoystickHandler {
     @Override
     public void bind(IJoystickButton button, Command command) {
 
+    }
+
+    @Override
+    public void bind(JoystickBindable bindable) {
+        bindAll(bindable.getMappings());
     }
 }
