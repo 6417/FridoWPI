@@ -53,4 +53,10 @@ public class Initializer implements IInitializer {
 
         toInitialize.addAll(Arrays.asList(initialisables));
     }
+
+    @Override
+    public void removeInitialisable(Initialisable... initialisables) {
+        for (var ini : initialisables)
+            toInitialize.remove(ini);
+    }
 }
