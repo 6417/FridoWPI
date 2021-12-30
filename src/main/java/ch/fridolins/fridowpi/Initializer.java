@@ -31,14 +31,13 @@ public class Initializer implements IInitializer {
         return instance;
     }
 
-    private Set<OptionalInitialisable> toInitialize;
+    private Set<Initialisable> toInitialize;
 
     @Override
     public void init() {
         toInitialize.stream()
                 .filter((initialisable) -> !initialisable.isInitialized())
-                .filter(OptionalInitialisable::isActivated)
-                .forEach(OptionalInitialisable::init);
+                .forEach(Initialisable::init);
     }
 
     @Override
@@ -46,41 +45,12 @@ public class Initializer implements IInitializer {
         if (toInitialize.size() == 0)
             return true;
         return toInitialize.stream()
-                .filter(OptionalInitialisable::isActivated)
-                .allMatch(OptionalInitialisable::isInitialized);
+                .allMatch(Initialisable::isInitialized);
     }
 
     @Override
     public void addInitialisable(Initialisable... initialisables) {
-        Arrays.stream(initialisables)
-                .filter((ini) -> !(ini instanceof Activatable))
-                .map(this::initialisableToOptionalInitialize)
-                .forEach(toInitialize::add);
 
-        Arrays.stream(initialisables)
-                .filter((ini) -> (ini instanceof Activatable))
-                .map((ini) -> (OptionalInitialisable) ini)
-                .forEach(toInitialize::add);
-    }
-
-    private OptionalInitialisable initialisableToOptionalInitialize(Initialisable initialisable) {
-        return new OptionalInitialisable() {
-            private final Initialisable initialisableProxy = initialisable;
-
-            @Override
-            public boolean isActivated() {
-                return true;
-            }
-
-            @Override
-            public void init() {
-                initialisableProxy.init();
-            }
-
-            @Override
-            public boolean isInitialized() {
-                return initialisableProxy.isInitialized();
-            }
-        };
+        toInitialize.addAll(Arrays.asList(initialisables));
     }
 }
