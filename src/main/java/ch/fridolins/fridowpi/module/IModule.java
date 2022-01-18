@@ -7,5 +7,6 @@ import java.util.Collection;
 public interface IModule extends Subsystem {
     Collection<IModule> getAllSubModules();
     Collection<IModule> getSubModules();
+    void registerSubmodule(IModule... subModule);
 }
 
