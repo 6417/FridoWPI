@@ -7,5 +7,4 @@ import java.util.function.BiConsumer;
 
 public interface IJoystickButtonId {
     int getButtonId();
-    IJoystickId getJoystickId();
 }

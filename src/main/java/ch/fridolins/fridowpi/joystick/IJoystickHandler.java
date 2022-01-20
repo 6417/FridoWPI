@@ -19,5 +19,7 @@ public interface IJoystickHandler extends Initialisable {
 
     void setupJoysticks(List<IJoystickId> joystickIds);
 
+    public IJoystick getJoystick(IJoystickId id);
+
     void setJoystickFactory(Function<IJoystickId, IJoystick> factory);
 }

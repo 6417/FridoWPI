@@ -6,9 +6,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.Button;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -17,12 +15,13 @@ import java.util.function.Supplier;
 public class JoystickHandler implements IJoystickHandler {
     private static Supplier<IJoystickHandler> factory = JoystickHandler::new;
     private static IJoystickHandler instance;
-    private Map<IJoystickId, IJoystick> joysticks;
+    private final Map<Integer, IJoystick> joysticks = new HashMap<>();
     private Function<IJoystickId, IJoystick> joystickFactory;
-    private List<Pair<Binding, Command>> toInitialize;
+    private List<Pair<Binding, Command>> toInitialize = new ArrayList<>();
 
+    @Override
     public IJoystick getJoystick(IJoystickId id) {
-        return joysticks.get(id);
+        return joysticks.get(id.getPort());
     }
 
     public static void setFactory(Supplier<IJoystickHandler> fact) {
@@ -37,7 +36,7 @@ public class JoystickHandler implements IJoystickHandler {
 
     @Override
     public void setupJoysticks(List<IJoystickId> joystickIds) {
-        joystickIds.forEach((id) -> joysticks.put(id, joystickFactory.apply(id)));
+        joystickIds.forEach((id) -> joysticks.put(id.getPort(), joystickFactory.apply(id)));
     }
 
     protected JoystickHandler() {
@@ -62,7 +61,7 @@ public class JoystickHandler implements IJoystickHandler {
             Binding binding = pair.getFirst();
             Command command = pair.getSecond();
 
-            binding.action.accept(getJoystick(binding.buttonId.getJoystickId()).getButton(binding.buttonId), command);
+            binding.action.accept(getJoystick(binding.joystickId).getButton(binding.buttonId), command);
         });
 
         toInitialize.clear();
