@@ -11,9 +11,9 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 public interface IJoystickHandler extends Initialisable {
-    void bindAll(List<Pair<Binding, Command>> bindings);
+    void bindAll(List<Binding> bindings);
 
-    void bind(Binding binding, Command command);
+    void bind(Binding binding);
 
     void bind(JoystickBindable bindable);
 

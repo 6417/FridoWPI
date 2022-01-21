@@ -2,6 +2,8 @@ package ch.fridolins.fridowpi;
 
 import ch.fridolins.fridowpi.joystick.*;
 import ch.fridolins.fridowpi.joystick.joysticks.Logitech;
+import edu.wpi.first.math.Pair;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
@@ -157,7 +159,7 @@ public class JoystickBindableTest {
 
         final AtomicReference<Boolean> executed = new AtomicReference<>(false);
 
-        JoystickHandler.getInstance().bind(new Binding(Button::whenPressed, () -> 1, () -> 1), new InstantCommand(() -> executed.set(true)));
+        JoystickHandler.getInstance().bind(new Binding(() -> 1, () -> 1, Button::whenPressed, new InstantCommand(() -> executed.set(true))));
 
         ((TestJoystick) JoystickHandler.getInstance().getJoystick(() -> 1)).releaseButton(1);
         JoystickHandler.getInstance().init();
@@ -193,8 +195,8 @@ public class JoystickBindableTest {
         final AtomicReference<Boolean> executed1 = new AtomicReference<>(false);
         final AtomicReference<Boolean> executed2 = new AtomicReference<>(false);
 
-        JoystickHandler.getInstance().bind(new Binding(Button::whenPressed, () -> 1, () -> 1), new InstantCommand(() -> executed1.set(true)));
-        JoystickHandler.getInstance().bind(new Binding(Button::whenPressed, () -> 1, () -> 2), new InstantCommand(() -> executed2.set(true)));
+        JoystickHandler.getInstance().bind(new Binding(() -> 1, () -> 1, Button::whenPressed, new InstantCommand(() -> executed1.set(true))));
+        JoystickHandler.getInstance().bind(new Binding(() -> 1, () -> 2, Button::whenPressed, new InstantCommand(() -> executed2.set(true))));
 
         ((TestJoystick) JoystickHandler.getInstance().getJoystick(() -> 1)).releaseButton(1);
         ((TestJoystick) JoystickHandler.getInstance().getJoystick(() -> 1)).releaseButton(2);
@@ -225,8 +227,8 @@ public class JoystickBindableTest {
         final AtomicReference<Boolean> executed1 = new AtomicReference<>(false);
         final AtomicReference<Boolean> executed2 = new AtomicReference<>(false);
 
-        JoystickHandler.getInstance().bind(new Binding(Button::whenPressed, () -> 1, () -> 1), new InstantCommand(() -> executed1.set(true)));
-        JoystickHandler.getInstance().bind(new Binding(Button::whenPressed, () -> 2, () -> 1), new InstantCommand(() -> executed2.set(true)));
+        JoystickHandler.getInstance().bind(new Binding(() -> 1, () -> 1, Button::whenPressed, new InstantCommand(() -> executed1.set(true))));
+        JoystickHandler.getInstance().bind(new Binding(() -> 2, () -> 1, Button::whenPressed, new InstantCommand(() -> executed2.set(true))));
 
         ((TestJoystick) JoystickHandler.getInstance().getJoystick(() -> 1)).releaseButton(1);
         ((TestJoystick) JoystickHandler.getInstance().getJoystick(() -> 2)).releaseButton(1);
@@ -247,6 +249,62 @@ public class JoystickBindableTest {
             CommandScheduler.getInstance().run();
             assertTrue(executed1.get());
             assertTrue(executed2.get());
+        });
+    }
+
+    @Test
+    void joystickBindables() {
+        JoystickHandler.getInstance().setupJoysticks(mkJoystickIds(1, 2));
+
+        class TestBindable implements JoystickBindable {
+            public boolean cmd11Executed = false;
+            public boolean cmd12Executed = false;
+            public boolean cmd21Executed = false;
+
+            @Override
+            public List<Binding> getMappings() {
+                return List.of(
+                        new Binding(() -> 1, () -> 1, Button::whenPressed, new InstantCommand(() -> {
+                            this.cmd11Executed = true;
+                        })),
+                        new Binding(() -> 1, () -> 2, Button::whenPressed, new InstantCommand(() -> {
+                            this.cmd12Executed = true;
+                        })),
+                        new Binding(() -> 2, () -> 1, Button::whenPressed, new InstantCommand(() -> {
+                            this.cmd21Executed = true;
+                        })));
+            }
+        }
+
+
+        TestBindable test = new TestBindable();
+        JoystickHandler.getInstance().bind(test);
+
+        JoystickHandler.getInstance().init();
+
+        withRobotEnabled(() -> {
+            ((TestJoystick) JoystickHandler.getInstance().getJoystick(() -> 1)).pressButton(1);
+            CommandScheduler.getInstance().run();
+
+            assertTrue(test.cmd11Executed);
+            assertFalse(test.cmd12Executed);
+            assertFalse(test.cmd21Executed);
+
+
+            ((TestJoystick) JoystickHandler.getInstance().getJoystick(() -> 1)).pressButton(2);
+            CommandScheduler.getInstance().run();
+
+            assertTrue(test.cmd11Executed);
+            assertTrue(test.cmd12Executed);
+            assertFalse(test.cmd21Executed);
+
+
+            ((TestJoystick) JoystickHandler.getInstance().getJoystick(() -> 2)).pressButton(1);
+            CommandScheduler.getInstance().run();
+
+            assertTrue(test.cmd11Executed);
+            assertTrue(test.cmd12Executed);
+            assertTrue(test.cmd21Executed);
         });
     }
 }

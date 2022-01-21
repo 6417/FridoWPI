@@ -7,5 +7,5 @@ import java.util.List;
 import java.util.Map;
 
 public interface JoystickBindable {
-    List<Pair<Binding, Command>> getMappings();
+    List<Binding> getMappings();
 }
