@@ -2,23 +2,23 @@ package ch.fridolins.fridowpi.joystick.joysticks;
 
 import ch.fridolins.fridowpi.joystick.IJoystickButtonId;
 
-public enum Logitech implements IJoystickButtonId {
-    x(1),
-    a(2),
-    b(3),
-    y(4),
-    lb(5),
-    rb(6),
-    lt(7),
-    rt(8),
-    back(9),
-    start(10),
-    leftJoystick(11),
-    rightJoystick(12);
+public enum LogitechExtreme implements IJoystickButtonId {
+    _1(1),
+    _2(2),
+    _3(3),
+    _4(4),
+    _5(5),
+    _6(6),
+    _7(7),
+    _8(8),
+    _9(9),
+    _10(10),
+    _11(11),
+    _12(12);
 
     private final int buttonId;
 
-    private Logitech(int id) {
+    private LogitechExtreme(int id) {
         buttonId = id;
     }
 
