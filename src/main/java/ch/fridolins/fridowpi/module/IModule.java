@@ -8,3 +8,4 @@ public interface IModule extends Subsystem {
     Collection<IModule> getAllSubModules();
     Collection<IModule> getSubModules();
 }
+
