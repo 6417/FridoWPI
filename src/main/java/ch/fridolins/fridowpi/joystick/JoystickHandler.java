@@ -17,7 +17,7 @@ public class JoystickHandler implements IJoystickHandler {
     private static IJoystickHandler instance;
     private final Map<Integer, IJoystick> joysticks = new HashMap<>();
     private Function<IJoystickId, IJoystick> joystickFactory;
-    private List<Pair<Binding, Command>> toInitialize = new ArrayList<>();
+    private List<Binding> toInitialize = new ArrayList<>();
 
     @Override
     public IJoystick getJoystick(IJoystickId id) {
@@ -57,11 +57,8 @@ public class JoystickHandler implements IJoystickHandler {
 
     @Override
     public void init() {
-        toInitialize.forEach((pair) -> {
-            Binding binding = pair.getFirst();
-            Command command = pair.getSecond();
-
-            binding.action.accept(getJoystick(binding.joystickId).getButton(binding.buttonId), command);
+        toInitialize.forEach((binding) -> {
+            binding.action.accept(getJoystick(binding.joystickId).getButton(binding.buttonId), binding.command);
         });
 
         toInitialize.clear();
@@ -73,13 +70,13 @@ public class JoystickHandler implements IJoystickHandler {
     }
 
     @Override
-    public void bindAll(List<Pair<Binding, Command>> bindings) {
-        bindings.forEach((pair) -> this.bind(pair.getFirst(), pair.getSecond()));
+    public void bindAll(List<Binding> bindings) {
+        bindings.forEach(this::bind);
     }
 
     @Override
-    public void bind(Binding binding, Command command) {
-        toInitialize.add(new Pair<>(binding, command));
+    public void bind(Binding binding) {
+        toInitialize.add(binding);
     }
 
     @Override

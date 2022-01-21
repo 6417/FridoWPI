@@ -4,6 +4,7 @@ import ch.fridolins.fridowpi.Initializer;
 import ch.fridolins.fridowpi.base.OptionalInitialisable;
 import ch.fridolins.fridowpi.joystick.Binding;
 import ch.fridolins.fridowpi.joystick.JoystickBindable;
+import ch.fridolins.fridowpi.joystick.JoystickHandler;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -64,7 +65,7 @@ public class Module extends SubsystemBase implements JoystickBindable, OptionalI
     }
 
     @Override
-    public List<Pair<Binding, Command>> getMappings() {
+    public List<Binding> getMappings() {
         return new ArrayList<>();
     }
 }
