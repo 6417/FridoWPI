@@ -5,6 +5,7 @@ import com.kauailabs.navx.frc.ITimestampedDataSubscriber;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 
 public interface INavx extends Gyro {
+
     float getPitch();
 
     float getRoll();

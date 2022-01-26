@@ -22,13 +22,36 @@ public class Navx extends AHRS implements INavx, Initialisable {
     }
 
     private static float yawOffset = 0.f;
+
+
     private static float pitchOffset = 0.f;
     private static float rollOffset = 0.f;
 
     /**
+     * @return offset in degrees
+     */
+    public static float getYawOffset() {
+        return yawOffset;
+    }
+
+    /**
+     * @return offset in degrees
+     */
+    public static float getPitchOffset() {
+        return pitchOffset;
+    }
+
+    /**
+     * @return offset in degrees
+     */
+    public static float getRollOffset() {
+        return rollOffset;
+    }
+
+    /**
      * @param offset in degrees
      */
-    public void setYawOffset(float offset) {
+    public static void setYawOffset(float offset) {
         yawOffset = offset;
     }
 
@@ -44,6 +67,27 @@ public class Navx extends AHRS implements INavx, Initialisable {
      */
     public static void setRollOffset(float offset) {
         rollOffset = offset;
+    }
+
+    /**
+     * @param offset in degrees
+     */
+    public static void setYawOffset(double offset) {
+        yawOffset = (float) offset;
+    }
+
+    /**
+     * @param offset in degrees
+     */
+    public static void setPitchOffset(double offset) {
+        pitchOffset = (float) offset;
+    }
+
+    /**
+     * @param offset in degrees
+     */
+    public static void setRollOffset(double offset) {
+        rollOffset = (float) offset;
     }
 
     public static void setFactory(Function<SPI.Port, INavx> factory) {
