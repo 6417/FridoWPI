@@ -5,6 +5,7 @@ import ch.fridolins.fridowpi.Initializer;
 import ch.fridolins.fridowpi.base.Initialisable;
 import ch.fridolins.fridowpi.sensors.base.INavx;
 import com.kauailabs.navx.frc.AHRS;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.SPI;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,14 +25,23 @@ public class Navx extends AHRS implements INavx, Initialisable {
     private static float pitchOffset = 0.f;
     private static float rollOffset = 0.f;
 
+    /**
+     * @param offset in degrees
+     */
     public void setYawOffset(float offset) {
         yawOffset = offset;
     }
 
+    /**
+     * @param offset in degrees
+     */
     public static void setPitchOffset(float offset) {
         pitchOffset = offset;
     }
 
+    /**
+     * @param offset in degrees
+     */
     public static void setRollOffset(float offset) {
         rollOffset = offset;
     }
@@ -70,6 +80,16 @@ public class Navx extends AHRS implements INavx, Initialisable {
         return super.getYaw() + rollOffset;
     }
 
+    @Override
+    public double getAngle() {
+        return super.getAngle() + yawOffset;
+    }
+
+
+    @Override
+    public Rotation2d getRotation2d() {
+        return Rotation2d.fromDegrees(super.getRotation2d().getDegrees() + yawOffset);
+    }
 
     private static Logger logger = LogManager.getLogger(Navx.class);
     private boolean initialized = false;
