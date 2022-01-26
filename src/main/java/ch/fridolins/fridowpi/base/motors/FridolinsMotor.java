@@ -1,6 +1,9 @@
 package ch.fridolins.fridowpi.base.motors;
 
-public interface FridolinsMotor {
+import ch.fridolins.fridowpi.module.IModule;
+import edu.wpi.first.wpilibj.motorcontrol.MotorController;
+
+public interface FridolinsMotor extends IModule, MotorController {
     public enum IdleModeType {
         kBrake, kCoast
     }
