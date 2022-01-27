@@ -1,4 +1,4 @@
-package ch.fridolins.fridowpi.base.motors;
+package ch.fridolins.fridowpi.motors;
 
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 

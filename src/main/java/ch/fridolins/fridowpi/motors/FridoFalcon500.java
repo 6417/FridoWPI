@@ -1,9 +1,9 @@
-package ch.fridolins.fridowpi.base.motors;
+package ch.fridolins.fridowpi.motors;
 
 import java.util.Collection;
 import java.util.Optional;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
+import ch.fridolins.fridowpi.motors.utils.PidValues;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.FollowerType;
 import com.ctre.phoenix.motorcontrol.IMotorController;
@@ -12,11 +12,8 @@ import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import ch.fridolins.fridowpi.base.motors.utils.PidValues;
 import ch.fridolins.fridowpi.module.IModule;
 import ch.fridolins.fridowpi.module.Module;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.motorcontrol.Talon;
 
 public class FridoFalcon500 extends TalonFX implements PIDController, LimitSwitchController, FeedBackDevice, IModule, FridolinsMotor{
 
@@ -30,7 +27,7 @@ public class FridoFalcon500 extends TalonFX implements PIDController, LimitSwitc
     public FeedbackDevice convertFromTalonFXFeedbackDevice(FridoFeedBackDevice device) {
         switch(device) {
             case kRelative: return FeedbackDevice.QuadEncoder;
-            default: throw new Error("Feedbackdevice not avaible"); 
+            default: throw new Error("Feedbackdevice not avaible");
         }
     }
 

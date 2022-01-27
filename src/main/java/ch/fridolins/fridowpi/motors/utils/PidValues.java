@@ -1,4 +1,4 @@
-package ch.fridolins.fridowpi.base.motors.utils;
+package ch.fridolins.fridowpi.motors.utils;
 
 import java.util.Optional;
 

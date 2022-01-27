@@ -1,8 +1,6 @@
-package ch.fridolins.fridowpi.base.motors;
+package ch.fridolins.fridowpi.motors;
 
-import edu.wpi.first.wpilibj.motorcontrol.MotorController;
-
-public interface FeedBackDevice extends MotorController{
+public interface FeedBackDevice extends FridolinsMotor{
 
     public enum FridoFeedBackDevice {
         kRelative, kAlternative

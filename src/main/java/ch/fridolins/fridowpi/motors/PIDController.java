@@ -1,6 +1,6 @@
-package ch.fridolins.fridowpi.base.motors;
+package ch.fridolins.fridowpi.motors;
 
-import ch.fridolins.fridowpi.base.motors.utils.PidValues;
+import ch.fridolins.fridowpi.motors.utils.PidValues;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 
 public interface PIDController extends MotorController{

@@ -1,17 +1,15 @@
-package ch.fridolins.fridowpi.base.motors;
+package ch.fridolins.fridowpi.motors;
 
-import java.lang.StackWalker.Option;
 import java.util.Collection;
 import java.util.Optional;
+
+import ch.fridolins.fridowpi.motors.utils.PidValues;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.SparkMaxRelativeEncoder.Type;
-import org.apache.logging.log4j.core.tools.picocli.CommandLine.PicocliException;
 import ch.fridolins.fridowpi.module.Module;
-import ch.fridolins.fridowpi.base.motors.FeedBackDevice.FridoFeedBackDevice;
-import ch.fridolins.fridowpi.base.motors.utils.PidValues;
 import ch.fridolins.fridowpi.module.IModule;
 
 public class FridoCanSparkMax extends CANSparkMax implements PIDController, LimitSwitchController, FeedBackDevice, IModule, FridolinsMotor {
