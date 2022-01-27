@@ -1,7 +1,10 @@
 package ch.fridolins.fridowpi.base.motors;
 
-public interface FridolinsMotor {
-    public enum IdleModeType {
+import ch.fridolins.fridowpi.module.IModule;
+import edu.wpi.first.wpilibj.motorcontrol.MotorController;
+
+public interface FridolinsMotor extends MotorController, IModule{
+    public enum FridoIdleMode {
         kBrake, kCoast
     }
 
@@ -9,7 +12,7 @@ public interface FridolinsMotor {
         followMaster, invertMaster
     }
 
-    public void setIdleMode(IdleModeType type);
+    public void setIdleMode(FridoIdleMode type);
 
     public void follow(FridolinsMotor master, DirectionType direction);
     

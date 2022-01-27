@@ -112,7 +112,7 @@ public class FridoCanSparkMax extends CANSparkMax implements PIDController, Limi
         return getReverseLimitSwitchInstance().isPressed();
     }
 
-    private IdleMode convertFromFridoIdleModeType(IdleModeType idleModeType) {
+    private IdleMode convertFromFridoIdleModeType(FridoIdleMode idleModeType) {
         switch (idleModeType) {
             case kBrake:
                 return IdleMode.kBrake;
@@ -124,7 +124,7 @@ public class FridoCanSparkMax extends CANSparkMax implements PIDController, Limi
     }
 
     @Override
-    public void setIdleMode(FridolinsMotor.IdleModeType type) {
+    public void setIdleMode(FridolinsMotor.FridoIdleMode type) {
         this.setIdleMode(convertFromFridoIdleModeType(type));
     }
 
@@ -252,6 +252,5 @@ public class FridoCanSparkMax extends CANSparkMax implements PIDController, Limi
     @Override
     public void registerSubmodule(IModule... subModule) {
         moduleProxy.registerSubmodule(subModule);
-        
     }
 }

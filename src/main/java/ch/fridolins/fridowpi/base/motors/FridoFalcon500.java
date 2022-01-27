@@ -1,128 +1,198 @@
 package ch.fridolins.fridowpi.base.motors;
 
+import java.util.Collection;
+import java.util.Optional;
+
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.FollowerType;
+import com.ctre.phoenix.motorcontrol.IMotorController;
+import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
+import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-
 import ch.fridolins.fridowpi.base.motors.utils.PidValues;
+import ch.fridolins.fridowpi.module.IModule;
 import ch.fridolins.fridowpi.module.Module;
+import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.motorcontrol.Talon;
 
-public class FridoFalcon500 extends TalonFX implements PIDController, LimitSwitchController, FeedBackDevice {
+public class FridoFalcon500 extends TalonFX implements PIDController, LimitSwitchController, FeedBackDevice, IModule, FridolinsMotor{
+
+    Module moduleProxy = new Module();
+    Optional<Integer> pidSlotIdx;
 
     public FridoFalcon500(int deviceNumber) {
         super(deviceNumber);
-        //TODO Auto-generated constructor stub
+    }
+
+    public FeedbackDevice convertFromTalonFXFeedbackDevice(FridoFeedBackDevice device) {
+        switch(device) {
+            case kRelative: return FeedbackDevice.QuadEncoder;
+            default: throw new Error("Feedbackdevice not avaible"); 
+        }
     }
 
     @Override
-    public void configEncoder(FeedbackDevice device, int countsPerRev) {
-        // TODO Auto-generated method stub
-        
+    public void configEncoder(FridoFeedBackDevice device, int countsPerRev) {
+        super.configSelectedFeedbackSensor(convertFromTalonFXFeedbackDevice(device));
     }
 
     @Override
     public void setEncoderDirection(boolean inverted) {
-        // TODO Auto-generated method stub
-        
+        super.setSensorPhase(inverted);
     }
 
     @Override
     public void setEncoderPosition(double position) {
-        // TODO Auto-generated method stub
-        
+        super.setSelectedSensorPosition((int)position);
     }
 
     @Override
     public double getEncoderTicks() {
-        // TODO Auto-generated method stub
-        return 0;
+        return super.getSelectedSensorPosition();
     }
 
     @Override
     public double getEncoderVelocity() {
-        // TODO Auto-generated method stub
-        return 0;
+        return super.getSelectedSensorVelocity();
+    }
+
+    private LimitSwitchNormal convertFromFridoLimitSwitchPolarity(LimitSwitchPolarity polarity) {
+        switch(polarity) {
+            case kDisabled: return LimitSwitchNormal.Disabled;
+            case kNormallyClosed: return LimitSwitchNormal.NormallyClosed;
+            case kNormallyOpen: return LimitSwitchNormal.NormallyOpen;
+            default: return LimitSwitchNormal.NormallyOpen;
+        }
     }
 
     @Override
     public void enableForwardLimitSwitch(LimitSwitchPolarity polarity, boolean enable) {
-        // TODO Auto-generated method stub
-        
+        if(!enable) {
+            polarity = LimitSwitchPolarity.kDisabled;
+        }
+        super.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, convertFromFridoLimitSwitchPolarity(polarity));
     }
 
     @Override
     public void enableReverseLimitSwitch(LimitSwitchPolarity polarity, boolean enable) {
-        // TODO Auto-generated method stub
-        
+        if(!enable) {
+            polarity = LimitSwitchPolarity.kDisabled;
+        }
+        super.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, convertFromFridoLimitSwitchPolarity(polarity));
     }
 
     @Override
     public boolean isForwardLimitSwitchActive() {
-        // TODO Auto-generated method stub
-        return false;
+        return super.getSensorCollection().isFwdLimitSwitchClosed() == 1;
     }
 
     @Override
     public boolean isReverseLimitSwitchActive() {
-        // TODO Auto-generated method stub
-        return false;
+        return super.getSensorCollection().isRevLimitSwitchClosed() == 1;
     }
 
     @Override
     public void setVelocity(double velocity) {
-        // TODO Auto-generated method stub
-        
+        super.set(TalonFXControlMode.Velocity, velocity);
     }
 
     @Override
     public void setPosition(double position) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void setPidValues(PidValues values) {
-        // TODO Auto-generated method stub
-        
+        super.set(TalonFXControlMode.Position, position);
     }
 
     @Override
     public void selectPidSlot(int slotIndex) {
-        // TODO Auto-generated method stub
-        
+        this.pidSlotIdx = Optional.of(slotIndex);
     }
 
 	@Override
 	public void set(double speed) {
-		// TODO Auto-generated method stub
-		
+        super.set(TalonFXControlMode.PercentOutput, speed);
 	}
 
 	@Override
 	public double get() {
-		// TODO Auto-generated method stub
-		return 0;
+        return super.getMotorOutputPercent();
 	}
 
 	@Override
 	public void setInverted(boolean isInverted) {
-		// TODO Auto-generated method stub
-		
+        super.setInverted(isInverted);
 	}
 
 	@Override
 	public boolean getInverted() {
-		// TODO Auto-generated method stub
-		return false;
+        return super.getInverted();
 	}
 
 	@Override
 	public void disable() {
-		// TODO Auto-generated method stub
-		
+        super.set(TalonFXControlMode.Disabled, 0);
 	}
 
 	@Override
 	public void stopMotor() {
-		// TODO Auto-generated method stub
-		
+        super.set(TalonFXControlMode.PercentOutput, 0);
 	}
+
+    @Override
+    public void configOpenLoopRamp(double rate) {
+        super.configOpenloopRamp(rate);
+    }
+
+    @Override
+    public void setPID(PidValues pidValues) {
+        if(!pidSlotIdx.isPresent()) {
+            pidSlotIdx = Optional.of(0);
+        }
+        super.config_kP(pidSlotIdx.get(), pidValues.kP);
+        super.config_kI(pidSlotIdx.get(), pidValues.kI);
+        super.config_kD(pidSlotIdx.get(), pidValues.kD);
+        pidValues.kF.ifPresent((kF) -> {super.config_kF(pidSlotIdx.get(), pidValues.kF.get());});
+    }
+
+    private NeutralMode convertFromFridoIdleMode(FridoIdleMode mode) {
+        switch(mode) {
+            case kBrake: return NeutralMode.Brake;
+            case kCoast: return NeutralMode.Coast;
+            default: return NeutralMode.Coast;
+        }
+    }
+
+    @Override
+    public void setIdleMode(FridoIdleMode type) {
+        super.setNeutralMode(convertFromFridoIdleMode(type));
+    }
+
+    @Override
+    public void follow(FridolinsMotor master, DirectionType direction) {
+        if (master instanceof IMotorController)
+            super.follow((IMotorController) master, FollowerType.PercentOutput);
+        else 
+            throw new Error("Can only follow 'com.ctre.phoenix.motorcontrol.IMotorController' motors");
+    }
+
+    @Override
+    public void factoryDefault() {
+        super.configFactoryDefault();
+    }
+
+    @Override
+    public Collection<IModule> getAllSubModules() {
+        return moduleProxy.getAllSubModules();
+    }
+
+    @Override
+    public Collection<IModule> getSubModules() {
+        return moduleProxy.getSubModules();
+    }
+
+    @Override
+    public void registerSubmodule(IModule... subModule) {
+        moduleProxy.registerSubmodule(subModule);
+    }
 }
