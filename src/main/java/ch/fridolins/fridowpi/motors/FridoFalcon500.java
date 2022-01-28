@@ -15,7 +15,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import ch.fridolins.fridowpi.module.IModule;
 import ch.fridolins.fridowpi.module.Module;
 
-public class FridoFalcon500 extends TalonFX implements PIDController, LimitSwitchController, FeedBackDevice, IModule, FridolinsMotor{
+public class FridoFalcon500 extends TalonFX implements PIDController, LimitSwitchController, FeedBackDevice, IModule, FridolinsMotor {
 
     Module moduleProxy = new Module();
     Optional<Integer> pidSlotIdx;
@@ -25,9 +25,11 @@ public class FridoFalcon500 extends TalonFX implements PIDController, LimitSwitc
     }
 
     public FeedbackDevice convertFromTalonFXFeedbackDevice(FridoFeedBackDevice device) {
-        switch(device) {
-            case kRelative: return FeedbackDevice.QuadEncoder;
-            default: throw new Error("Feedbackdevice not avaible");
+        switch (device) {
+            case kRelative:
+                return FeedbackDevice.QuadEncoder;
+            default:
+                throw new Error("Feedbackdevice not avaible");
         }
     }
 
@@ -43,7 +45,7 @@ public class FridoFalcon500 extends TalonFX implements PIDController, LimitSwitc
 
     @Override
     public void setEncoderPosition(double position) {
-        super.setSelectedSensorPosition((int)position);
+        super.setSelectedSensorPosition((int) position);
     }
 
     @Override
@@ -57,17 +59,21 @@ public class FridoFalcon500 extends TalonFX implements PIDController, LimitSwitc
     }
 
     private LimitSwitchNormal convertFromFridoLimitSwitchPolarity(LimitSwitchPolarity polarity) {
-        switch(polarity) {
-            case kDisabled: return LimitSwitchNormal.Disabled;
-            case kNormallyClosed: return LimitSwitchNormal.NormallyClosed;
-            case kNormallyOpen: return LimitSwitchNormal.NormallyOpen;
-            default: return LimitSwitchNormal.NormallyOpen;
+        switch (polarity) {
+            case kDisabled:
+                return LimitSwitchNormal.Disabled;
+            case kNormallyClosed:
+                return LimitSwitchNormal.NormallyClosed;
+            case kNormallyOpen:
+                return LimitSwitchNormal.NormallyOpen;
+            default:
+                return LimitSwitchNormal.NormallyOpen;
         }
     }
 
     @Override
     public void enableForwardLimitSwitch(LimitSwitchPolarity polarity, boolean enable) {
-        if(!enable) {
+        if (!enable) {
             polarity = LimitSwitchPolarity.kDisabled;
         }
         super.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, convertFromFridoLimitSwitchPolarity(polarity));
@@ -75,7 +81,7 @@ public class FridoFalcon500 extends TalonFX implements PIDController, LimitSwitc
 
     @Override
     public void enableReverseLimitSwitch(LimitSwitchPolarity polarity, boolean enable) {
-        if(!enable) {
+        if (!enable) {
             polarity = LimitSwitchPolarity.kDisabled;
         }
         super.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, convertFromFridoLimitSwitchPolarity(polarity));
@@ -106,35 +112,35 @@ public class FridoFalcon500 extends TalonFX implements PIDController, LimitSwitc
         this.pidSlotIdx = Optional.of(slotIndex);
     }
 
-	@Override
-	public void set(double speed) {
+    @Override
+    public void set(double speed) {
         super.set(TalonFXControlMode.PercentOutput, speed);
-	}
+    }
 
-	@Override
-	public double get() {
+    @Override
+    public double get() {
         return super.getMotorOutputPercent();
-	}
+    }
 
-	@Override
-	public void setInverted(boolean isInverted) {
+    @Override
+    public void setInverted(boolean isInverted) {
         super.setInverted(isInverted);
-	}
+    }
 
-	@Override
-	public boolean getInverted() {
+    @Override
+    public boolean getInverted() {
         return super.getInverted();
-	}
+    }
 
-	@Override
-	public void disable() {
+    @Override
+    public void disable() {
         super.set(TalonFXControlMode.Disabled, 0);
-	}
+    }
 
-	@Override
-	public void stopMotor() {
+    @Override
+    public void stopMotor() {
         super.set(TalonFXControlMode.PercentOutput, 0);
-	}
+    }
 
     @Override
     public void configOpenLoopRamp(double rate) {
@@ -143,20 +149,25 @@ public class FridoFalcon500 extends TalonFX implements PIDController, LimitSwitc
 
     @Override
     public void setPID(PidValues pidValues) {
-        if(!pidSlotIdx.isPresent()) {
+        if (!pidSlotIdx.isPresent()) {
             pidSlotIdx = Optional.of(0);
         }
         super.config_kP(pidSlotIdx.get(), pidValues.kP);
         super.config_kI(pidSlotIdx.get(), pidValues.kI);
         super.config_kD(pidSlotIdx.get(), pidValues.kD);
-        pidValues.kF.ifPresent((kF) -> {super.config_kF(pidSlotIdx.get(), pidValues.kF.get());});
+        pidValues.kF.ifPresent((kF) -> {
+            super.config_kF(pidSlotIdx.get(), pidValues.kF.get());
+        });
     }
 
     private NeutralMode convertFromFridoIdleMode(FridoIdleMode mode) {
-        switch(mode) {
-            case kBrake: return NeutralMode.Brake;
-            case kCoast: return NeutralMode.Coast;
-            default: return NeutralMode.Coast;
+        switch (mode) {
+            case kBrake:
+                return NeutralMode.Brake;
+            case kCoast:
+                return NeutralMode.Coast;
+            default:
+                return NeutralMode.Coast;
         }
     }
 
@@ -169,7 +180,7 @@ public class FridoFalcon500 extends TalonFX implements PIDController, LimitSwitc
     public void follow(FridolinsMotor master, DirectionType direction) {
         if (master instanceof IMotorController)
             super.follow((IMotorController) master, FollowerType.PercentOutput);
-        else 
+        else
             throw new Error("Can only follow 'com.ctre.phoenix.motorcontrol.IMotorController' motors");
     }
 

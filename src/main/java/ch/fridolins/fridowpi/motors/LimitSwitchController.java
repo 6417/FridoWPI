@@ -2,7 +2,7 @@ package ch.fridolins.fridowpi.motors;
 
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 
-public interface LimitSwitchController extends MotorController{
+public interface LimitSwitchController extends MotorController {
 
     public enum LimitSwitchPolarity {
         kNormallyOpen, kNormallyClosed, kDisabled

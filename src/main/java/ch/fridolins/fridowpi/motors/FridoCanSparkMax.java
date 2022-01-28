@@ -13,9 +13,9 @@ import ch.fridolins.fridowpi.module.Module;
 import ch.fridolins.fridowpi.module.IModule;
 
 public class FridoCanSparkMax extends CANSparkMax implements PIDController, LimitSwitchController, FeedBackDevice, IModule, FridolinsMotor {
-    
+
     private IModule moduleProxy = new Module();
-    
+
     SparkMaxLimitSwitch forwardLimitSwitch;
     SparkMaxLimitSwitch reverseLimitSwitch;
     SparkMaxPIDController pidController;
