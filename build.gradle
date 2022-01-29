@@ -48,9 +48,11 @@ def includeDesktopSupport = false
 test {
     useJUnitPlatform()
 }
-
 repositories {
     mavenCentral()
+    maven {
+    }
+        url "https://maven.revrobotics.com/"
 }
 
 // Defining my dependencies. In this case, WPILib (+ friends), and vendor libraries.
@@ -89,6 +91,9 @@ dependencies {
 
     // Navx
     implementation group: 'com.kauailabs.navx.frc', name: 'navx-java', version: '4.0.442'
+
+    // REV Sparks
+    implementation group: 'com.revrobotics.frc', name: 'REVLib-java', version: '2022.1.1'
 }
 
 // Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')
