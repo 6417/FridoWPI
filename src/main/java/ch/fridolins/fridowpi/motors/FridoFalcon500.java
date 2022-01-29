@@ -160,7 +160,7 @@ public class FridoFalcon500 extends TalonFX implements FridolinsMotor {
         });
     }
 
-    private NeutralMode convertFromFridoIdleMode(FridoIdleMode mode) {
+    private NeutralMode convertFromFridoIdleMode(IdleMode mode) {
         switch (mode) {
             case kBrake:
                 return NeutralMode.Brake;
@@ -172,7 +172,7 @@ public class FridoFalcon500 extends TalonFX implements FridolinsMotor {
     }
 
     @Override
-    public void setIdleMode(FridoIdleMode type) {
+    public void setIdleMode(IdleMode type) {
         super.setNeutralMode(convertFromFridoIdleMode(type));
     }
 

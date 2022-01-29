@@ -109,19 +109,19 @@ public class FridoCanSparkMax extends CANSparkMax implements FridolinsMotor {
         return getReverseLimitSwitchInstance().isPressed();
     }
 
-    private IdleMode convertFromFridoIdleModeType(FridoIdleMode idleModeType) {
+    private CANSparkMax.IdleMode convertFromFridoIdleModeType(FridolinsMotor.IdleMode idleModeType) {
         switch (idleModeType) {
             case kBrake:
-                return IdleMode.kBrake;
+                return CANSparkMax.IdleMode.kBrake;
             case kCoast:
-                return IdleMode.kCoast;
+                return CANSparkMax.IdleMode.kCoast;
             default:
-                return IdleMode.kBrake;
+                return CANSparkMax.IdleMode.kBrake;
         }
     }
 
     @Override
-    public void setIdleMode(FridolinsMotor.FridoIdleMode type) {
+    public void setIdleMode(FridolinsMotor.IdleMode type) {
         this.setIdleMode(convertFromFridoIdleModeType(type));
     }
 
