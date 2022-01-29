@@ -3,14 +3,23 @@ package ch.fridolins.fridowpi.sensors;
 import ch.fridolins.fridowpi.sensors.base.IUltrasonic;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Ultrasonic;
 
 public class UltrasonicSensor extends Ultrasonic implements IUltrasonic {
-    private static LinearFilter filter;
+    private LinearFilter filter;
+    private Timer timer;
+    private double prevTime;
 
     public UltrasonicSensor(int pingChannel, int echoChannel) {
         super(pingChannel, echoChannel);
-        filter = LinearFilter.singlePoleIIR(0.1, 0.02);
+        // filter = LinearFilter.singlePoleIIR(0.1, 0.02);
+        filter = LinearFilter.movingAverage(16);
+        filter.reset();
+
+        timer = new Timer();
+        timer.start();
+        prevTime = timer.get();
     }
 
     /***
@@ -26,6 +35,8 @@ public class UltrasonicSensor extends Ultrasonic implements IUltrasonic {
      * */
     @Override
     public double getFilteredDistance() {
+        // System.out.println(timer.get() - prevTime);
+        // prevTime = timer.get();
         return filter.calculate(super.getRangeMM());
     }
 
