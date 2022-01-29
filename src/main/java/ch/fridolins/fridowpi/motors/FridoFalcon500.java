@@ -15,7 +15,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import ch.fridolins.fridowpi.module.IModule;
 import ch.fridolins.fridowpi.module.Module;
 
-public class FridoFalcon500 extends TalonFX implements PIDController, LimitSwitchController, FeedBackDevice, IModule, FridolinsMotor {
+public class FridoFalcon500 extends TalonFX implements FridolinsMotor {
 
     Module moduleProxy = new Module();
     Optional<Integer> pidSlotIdx;
