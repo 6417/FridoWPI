@@ -97,7 +97,15 @@ dependencies {
     implementation group: 'com.kauailabs.navx.frc', name: 'navx-java', version: '4.0.442'
 
     // CTRE Talons
-    implementation group: 'com.ctre.phoenix', name: 'api-java', version: '5.19.4'
+    implementation group: 'com.ctre.phoenix', name: 'api-java', version: '5.20.2'
+//    implementation group: 'com.ctre.phoenix', name: 'wpiapi-java', version: '5.20.2'
+//    implementation group: "com.ctre.phoenix", name: "cci", version: "5.20.2"
+//    implementation group: "com.ctre.phoenix.sim", name: "cci-sim", version: "5.20.2"
+//    implementation group: "com.ctre.phoenix.sim", name: "simTalonSRX", version: "5.20.2"
+//    implementation group: "com.ctre.phoenix.sim", name: "simTalonFX", version: "5.20.2"
+//    implementation group: "com.ctre.phoenix.sim", name: "simVictorSPX", version: "5.20.2"
+//    implementation group: "com.ctre.phoenix.sim", name: "simPigeonIMU", version: "5.20.2"
+//    implementation group: "com.ctre.phoenix.sim", name: "simCANCoder", version: "5.20.2"
 
     // REV Sparks
     implementation group: 'com.revrobotics.frc', name: 'REVLib-java', version: '2022.1.1'

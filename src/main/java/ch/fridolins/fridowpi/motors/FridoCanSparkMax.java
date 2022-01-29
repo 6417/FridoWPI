@@ -12,8 +12,7 @@ import com.revrobotics.SparkMaxRelativeEncoder.Type;
 import ch.fridolins.fridowpi.module.Module;
 import ch.fridolins.fridowpi.module.IModule;
 
-public class FridoCanSparkMax extends CANSparkMax implements PIDController, LimitSwitchController, FeedBackDevice, IModule, FridolinsMotor {
-
+public class FridoCanSparkMax extends CANSparkMax implements FridolinsMotor {
     private IModule moduleProxy = new Module();
 
     SparkMaxLimitSwitch forwardLimitSwitch;
@@ -57,7 +56,7 @@ public class FridoCanSparkMax extends CANSparkMax implements PIDController, Limi
         }
     }
 
-    private SparkMaxLimitSwitch.Type convertFromFridoLimitSwitchPolarity(LimitSwitchController.LimitSwitchPolarity polarity) {
+    private SparkMaxLimitSwitch.Type convertFromFridoLimitSwitchPolarity(FridolinsMotor.LimitSwitchPolarity polarity) {
         switch (polarity) {
             case kNormallyOpen:
                 return SparkMaxLimitSwitch.Type.kNormallyOpen;
@@ -72,7 +71,7 @@ public class FridoCanSparkMax extends CANSparkMax implements PIDController, Limi
         return forwardLimitSwitch;
     }
 
-    private SparkMaxLimitSwitch getForwardLimitSwitchInstance(LimitSwitchController.LimitSwitchPolarity polarity) {
+    private SparkMaxLimitSwitch getForwardLimitSwitchInstance(FridolinsMotor.LimitSwitchPolarity polarity) {
         if (forwardLimitSwitch == null) {
             forwardLimitSwitch = super.getForwardLimitSwitch(convertFromFridoLimitSwitchPolarity(polarity));
         }
@@ -83,7 +82,7 @@ public class FridoCanSparkMax extends CANSparkMax implements PIDController, Limi
         return reverseLimitSwitch;
     }
 
-    private SparkMaxLimitSwitch getReverselimitSwitchInstance(LimitSwitchController.LimitSwitchPolarity polarity) {
+    private SparkMaxLimitSwitch getReverselimitSwitchInstance(FridolinsMotor.LimitSwitchPolarity polarity) {
         if (reverseLimitSwitch == null) {
             reverseLimitSwitch = super.getReverseLimitSwitch(convertFromFridoLimitSwitchPolarity(polarity));
         }
@@ -91,12 +90,12 @@ public class FridoCanSparkMax extends CANSparkMax implements PIDController, Limi
     }
 
     @Override
-    public void enableForwardLimitSwitch(LimitSwitchController.LimitSwitchPolarity polarity, boolean enable) {
+    public void enableForwardLimitSwitch(FridolinsMotor.LimitSwitchPolarity polarity, boolean enable) {
         getForwardLimitSwitchInstance(polarity).enableLimitSwitch(enable);
     }
 
     @Override
-    public void enableReverseLimitSwitch(LimitSwitchController.LimitSwitchPolarity polarity, boolean enable) {
+    public void enableReverseLimitSwitch(FridolinsMotor.LimitSwitchPolarity polarity, boolean enable) {
         getReverselimitSwitchInstance(polarity).enableLimitSwitch(enable);
     }
 
