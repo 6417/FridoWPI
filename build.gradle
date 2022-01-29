@@ -51,8 +51,8 @@ test {
 repositories {
     mavenCentral()
     maven {
-    }
         url "https://maven.revrobotics.com/"
+    }
 }
 
 // Defining my dependencies. In this case, WPILib (+ friends), and vendor libraries.

@@ -5,7 +5,7 @@ import ch.fridolins.fridowpi.motors.utils.PidValues;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 
 public interface FridolinsMotor extends MotorController, IModule {
-    public enum FridoIdleMode {
+    public enum IdleMode {
         kBrake, kCoast
     }
 
@@ -13,7 +13,7 @@ public interface FridolinsMotor extends MotorController, IModule {
         followMaster, invertMaster
     }
 
-    public void setIdleMode(FridoIdleMode type);
+    public void setIdleMode(IdleMode type);
 
     public void follow(FridolinsMotor master, DirectionType direction);
 
