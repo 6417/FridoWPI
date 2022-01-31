@@ -13,7 +13,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.function.Function;
 
 public class Navx extends AHRS implements INavx, Initialisable {
-    private static Function<SPI.Port, INavx> factory;
+    private static Function<SPI.Port, INavx> factory = Navx::new;
 
     private static SPI.Port port;
 
@@ -94,7 +94,7 @@ public class Navx extends AHRS implements INavx, Initialisable {
         Navx.factory = factory;
     }
 
-    private Navx() {
+    private Navx(SPI.Port port) {
         super(port);
         Initializer.getInstance().addInitialisable(this);
     }

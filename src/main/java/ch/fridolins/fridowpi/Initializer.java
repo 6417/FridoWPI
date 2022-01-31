@@ -6,7 +6,9 @@ import ch.fridolins.fridowpi.base.IInitializer;
 import ch.fridolins.fridowpi.base.OptionalInitialisable;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class Initializer implements IInitializer {
     private Initializer() {
@@ -37,7 +39,10 @@ public class Initializer implements IInitializer {
     public void init() {
         toInitialize.stream()
                 .filter((initialisable) -> !initialisable.isInitialized())
+                .collect(Collectors.toList())
                 .forEach(Initialisable::init);
+
+        toInitialize.clear();
     }
 
     @Override

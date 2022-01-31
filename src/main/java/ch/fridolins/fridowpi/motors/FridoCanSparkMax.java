@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.Optional;
 
 import ch.fridolins.fridowpi.motors.utils.PidValues;
+
+import com.fasterxml.jackson.databind.ser.std.StdKeySerializers.Default;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxLimitSwitch;
@@ -180,10 +182,25 @@ public class FridoCanSparkMax extends CANSparkMax implements FridolinsMotor {
         super.restoreFactoryDefaults();
     }
 
+    private Type convertEncoderType(FridoFeedBackDevice device) {
+        switch (device) {
+            case kAlternative:
+                return Type.kHallSensor;
+            case kRelative:
+                return Type.kQuadrature;
+            default:
+                return Type.kHallSensor;
+        }
+    }
+
     @Override
     public void configEncoder(FridoFeedBackDevice device, int countsPerRev) {
-        this.relativeEncoder = super.getEncoder(Type.kQuadrature, countsPerRev);
-        this.relativeEncoder.setPositionConversionFactor(countsPerRev);
+        if (device == FridoFeedBackDevice.kBuildin) {
+            this.relativeEncoder = super.getEncoder();
+        } else {
+            this.relativeEncoder = super.getEncoder(convertEncoderType(device), countsPerRev);
+            this.relativeEncoder.setPositionConversionFactor(countsPerRev);
+        }
     }
 
     public void selectBuiltinFeedbackSensor() {

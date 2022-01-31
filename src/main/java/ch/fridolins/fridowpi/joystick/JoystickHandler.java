@@ -1,22 +1,19 @@
 package ch.fridolins.fridowpi.joystick;
 
-import ch.fridolins.fridowpi.Initializer;
-import edu.wpi.first.math.Pair;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Subsystem;
-import edu.wpi.first.wpilibj2.command.button.Button;
-
-import java.util.*;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
+
+import ch.fridolins.fridowpi.Initializer;
 
 public class JoystickHandler implements IJoystickHandler {
     private static Supplier<IJoystickHandler> factory = JoystickHandler::new;
     private static IJoystickHandler instance;
     private final Map<Integer, IJoystick> joysticks = new HashMap<>();
-    private Function<IJoystickId, IJoystick> joystickFactory;
+    private Function<IJoystickId, IJoystick> joystickFactory = WPIJoystick::new;
     private List<Binding> toInitialize = new ArrayList<>();
 
     @Override

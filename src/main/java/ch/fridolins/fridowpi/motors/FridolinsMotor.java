@@ -41,7 +41,7 @@ public interface FridolinsMotor extends MotorController, IModule {
     public boolean isReverseLimitSwitchActive();
 
     public enum FridoFeedBackDevice {
-        kRelative, kAlternative
+        kRelative, kAlternative, kBuildin
     }
 
     public void configEncoder(FridoFeedBackDevice device, int countsPerRev);
