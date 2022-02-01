@@ -1,18 +1,16 @@
 package ch.fridolins.fridowpi;
 
-import ch.fridolins.fridowpi.base.Activatable;
 import ch.fridolins.fridowpi.base.Initialisable;
 import ch.fridolins.fridowpi.base.IInitializer;
-import ch.fridolins.fridowpi.base.OptionalInitialisable;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 public class Initializer implements IInitializer {
     private Initializer() {
-        toInitialize = new HashSet<>();
+        toInitialize = new LinkedList<>();
     }
 
     private static IInitializer instance;
@@ -33,15 +31,29 @@ public class Initializer implements IInitializer {
         return instance;
     }
 
-    private Set<Initialisable> toInitialize;
+    private List<Initialisable> toInitialize;
+    private Map<Initialisable, List<Initialisable>> beforeMap = new HashMap<>();
+    private Map<Initialisable, List<Initialisable>> afterMap = new HashMap<>();
+
+    private final Logger logger = LogManager.getLogger(Initializer.class);
+
+    private List<Initialisable> getOrInitialize(Map<Initialisable, List<Initialisable>> map, Initialisable key) {
+        if (!map.containsKey(key))
+            map.put(key, new LinkedList<>());
+        return map.get(key);
+    }
+
+    private void initialize(Initialisable ini) {
+        getOrInitialize(beforeMap, ini).forEach(this::initialize);
+        ini.init();
+        getOrInitialize(afterMap, ini).forEach(this::initialize);
+    }
 
     @Override
     public void init() {
         toInitialize.stream()
                 .filter((initialisable) -> !initialisable.isInitialized())
-                .collect(Collectors.toList())
-                .forEach(Initialisable::init);
-
+                .forEach(this::initialize);
         toInitialize.clear();
     }
 
@@ -63,5 +75,29 @@ public class Initializer implements IInitializer {
     public void removeInitialisable(Initialisable... initialisables) {
         for (var ini : initialisables)
             toInitialize.remove(ini);
+    }
+
+    @Override
+    public void before(Initialisable initialisable, Initialisable before) {
+        getOrInitialize(beforeMap, initialisable).add(before);
+    }
+
+    @Override
+    public void after(Initialisable initialisable, Initialisable after) {
+        getOrInitialize(afterMap, initialisable).add(after);
+    }
+
+    @Override
+    public void removeBefore(Initialisable initialisable, Initialisable before) {
+        if (!beforeMap.containsKey(initialisable))
+            return;
+        beforeMap.get(initialisable).remove(before);
+    }
+
+    @Override
+    public void removeAfter(Initialisable initialisable, Initialisable after) {
+        if (!afterMap.containsKey(initialisable))
+            return;
+        afterMap.get(initialisable).remove(after);
     }
 }

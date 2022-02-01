@@ -2,13 +2,14 @@ package ch.fridolins.fridowpi;
 
 import ch.fridolins.fridowpi.base.Initialisable;
 import ch.fridolins.fridowpi.base.IInitializer;
-import ch.fridolins.fridowpi.base.OptionalInitialisable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ch.fridolins.fridowpi.module.Module;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -102,5 +103,193 @@ public class InitializerTest {
 
         Initializer.getInstance().init();
         assertTrue(mod.isInitialized());
+    }
+
+    class DieWhenCalled implements Initialisable {
+        @Override
+        public void init() {
+            fail();
+        }
+
+        @Override
+        public boolean isInitialized() {
+            return false;
+        }
+    }
+
+    @Test
+    void willBeforeBeCalledFirst() {
+        AtomicReference<Initialisable> test = new AtomicReference<Initialisable>();
+        test.set(new DieWhenCalled());
+
+        Initialisable testBefore = new Initialisable() {
+            private boolean initialized = false;
+
+            @Override
+            public void init() {
+                initialized = true;
+                assertFalse(test.get().isInitialized());
+            }
+
+            @Override
+            public boolean isInitialized() {
+                return initialized;
+            }
+        };
+
+        test.set(new Initialisable() {
+            private boolean initialized = false;
+
+            @Override
+            public void init() {
+                initialized = true;
+                assertTrue(testBefore.isInitialized());
+            }
+
+            @Override
+            public boolean isInitialized() {
+                return initialized;
+            }
+        });
+
+
+        Initializer.getInstance().before(test.get(), testBefore);
+
+        Initializer.getInstance().addInitialisable(test.get());
+    }
+
+    @Test
+    void willAfterBeCalledSecond() {
+        AtomicReference<Initialisable> test = new AtomicReference<Initialisable>();
+        test.set(new DieWhenCalled());
+
+        Initialisable testAfter = new Initialisable() {
+            private boolean initialized = false;
+
+            @Override
+            public void init() {
+                initialized = true;
+                assertTrue(test.get().isInitialized());
+            }
+
+            @Override
+            public boolean isInitialized() {
+                return initialized;
+            }
+        };
+
+        test.set(new Initialisable() {
+            private boolean initialized = false;
+
+            @Override
+            public void init() {
+                initialized = true;
+                assertFalse(testAfter.isInitialized());
+            }
+
+            @Override
+            public boolean isInitialized() {
+                return initialized;
+            }
+        });
+
+
+        Initializer.getInstance().after(test.get(), testAfter);
+        Initializer.getInstance().addInitialisable(test.get());
+    }
+
+    @Test
+    void afterAndBeforeCombined() {
+        AtomicReference<Initialisable> test = new AtomicReference<Initialisable>();
+        test.set(new DieWhenCalled());
+
+        Initialisable testBefore = new Initialisable() {
+            private boolean initialized = false;
+
+            @Override
+            public void init() {
+                initialized = true;
+                assertTrue(test.get().isInitialized());
+            }
+
+            @Override
+            public boolean isInitialized() {
+                return initialized;
+            }
+        };
+
+        Initialisable testAfter = new Initialisable() {
+            private boolean initialized = false;
+
+            @Override
+            public void init() {
+                initialized = true;
+                assertTrue(test.get().isInitialized());
+            }
+
+            @Override
+            public boolean isInitialized() {
+                return initialized;
+            }
+        };
+
+        test.set(new Initialisable() {
+            private boolean initialized = false;
+
+            @Override
+            public void init() {
+                initialized = true;
+                assertFalse(testAfter.isInitialized());
+            }
+
+            @Override
+            public boolean isInitialized() {
+                return initialized;
+            }
+        });
+
+        Initializer.getInstance().before(test.get(), testBefore);
+        Initializer.getInstance().after(test.get(), testAfter);
+
+        Initializer.getInstance().addInitialisable(test.get());
+    }
+
+    @Test
+    void nestedBefore() {
+        class TestInitialisable implements Initialisable {
+            private List<Initialisable> uninitialized;
+            private List<Initialisable> initialized;
+
+            private boolean isInit = false;
+
+            TestInitialisable(List<Initialisable> uninitialized, List<Initialisable> initialized) {
+                this.uninitialized = uninitialized;
+                this.initialized = initialized;
+            }
+
+            @Override
+            public void init() {
+                isInit = true;
+                uninitialized.forEach((ini) -> assertFalse(ini.isInitialized()));
+                initialized.forEach((ini) -> assertTrue(ini.isInitialized()));
+            }
+
+            @Override
+            public boolean isInitialized() {
+                return isInit;
+            }
+        }
+
+
+        Initialisable testBefore = new TestInitialisable(List.of(), List.of());
+        Initialisable testAfter = new TestInitialisable(List.of(), List.of(testBefore));
+
+        Initialisable test = new TestInitialisable(List.of(testAfter), List.of(testBefore));
+
+
+        Initializer.getInstance().before(test, testBefore);
+        Initializer.getInstance().after(test, testAfter);
+
+        Initializer.getInstance().addInitialisable(test);
     }
 }
