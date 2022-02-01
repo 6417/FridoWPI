@@ -4,8 +4,11 @@ import ch.fridolins.fridowpi.sensors.base.IUltrasonic;
 import ch.fridolins.fridowpi.sensors.base.IUltrasonicSensorArray;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.util.sendable.SendableRegistry;
 
-public class UltrasonicSensorArray implements IUltrasonicSensorArray {
+public class UltrasonicSensorArray implements IUltrasonicSensorArray, Sendable{
     private IUltrasonic rightSensor;
     private IUltrasonic leftSensor;
     private double sensorDistance;
@@ -27,6 +30,8 @@ public class UltrasonicSensorArray implements IUltrasonicSensorArray {
 
         angleFilter = LinearFilter.movingAverage(8);
         angleFilter.reset();
+
+        SendableRegistry.addLW(this, "UltrasonicSensorArray", 0);
     }
 
     /***
@@ -83,5 +88,13 @@ public class UltrasonicSensorArray implements IUltrasonicSensorArray {
     @Override
     public double getSensorDistance() {
         return this.sensorDistance;
+    }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        builder.addDoubleProperty("rawDistance", this::getRawDistance, null);
+        builder.addDoubleProperty("filteredDistance", this::getFilteredDistance, null);
+        builder.addDoubleProperty("rawAngle", () -> this.getRawAngle().getDegrees(), null);
+        builder.addDoubleProperty("filteredAngle", () -> this.getFilteredAngle().getDegrees(), null);
     }
 }
