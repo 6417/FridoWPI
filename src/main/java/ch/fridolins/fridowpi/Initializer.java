@@ -45,15 +45,14 @@ public class Initializer implements IInitializer {
 
     private void initialize(Initialisable ini) {
         getOrInitialize(beforeMap, ini).forEach(this::initialize);
-        ini.init();
+        if (!ini.isInitialized())
+            ini.init();
         getOrInitialize(afterMap, ini).forEach(this::initialize);
     }
 
     @Override
     public void init() {
-        toInitialize.stream()
-                .filter((initialisable) -> !initialisable.isInitialized())
-                .forEach(this::initialize);
+        toInitialize.forEach(this::initialize);
         toInitialize.clear();
     }
 
@@ -67,7 +66,13 @@ public class Initializer implements IInitializer {
 
     @Override
     public void addInitialisable(Initialisable... initialisables) {
+        toInitialize.addAll(Arrays.asList(initialisables));
+    }
 
+    @Override
+    public void addInitialisableToFront(Initialisable... initialisables) {
+        Arrays.stream(initialisables).forEach((ini) -> toInitialize.add(0, ini));
+        toInitialize.addAll(Arrays.asList(initialisables));
         toInitialize.addAll(Arrays.asList(initialisables));
     }
 

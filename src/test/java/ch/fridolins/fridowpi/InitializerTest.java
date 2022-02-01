@@ -292,4 +292,96 @@ public class InitializerTest {
 
         Initializer.getInstance().addInitialisable(test);
     }
+
+    @Test
+    void removeBefore() {
+        class TestInitialisable implements Initialisable {
+            private boolean initialized = false;
+            public final int id;
+
+            public TestInitialisable(int id) {
+                this.id = id;
+            }
+
+            @Override
+            public void init() {
+                initialized = true;
+            }
+
+            @Override
+            public boolean isInitialized() {
+                return initialized;
+            }
+        }
+
+        Initialisable test = new TestInitialisable(0);
+        Initialisable testBefore1 = new TestInitialisable(1);
+        Initialisable testBefore2 = new TestInitialisable(2);
+        Initialisable testBefore3 = new TestInitialisable(3);
+        Initialisable testBefore4 = new TestInitialisable(4);
+
+        Initializer.getInstance().before(test, testBefore1);
+        Initializer.getInstance().before(test, testBefore2);
+        Initializer.getInstance().before(test, testBefore3);
+        Initializer.getInstance().before(test, testBefore4);
+
+        Initializer.getInstance().removeBefore(test, testBefore2);
+        Initializer.getInstance().removeBefore(test, testBefore4);
+        Initializer.getInstance().addInitialisable(test);
+
+        Initializer.getInstance().init();
+
+        assertFalse(testBefore2.isInitialized());
+        assertFalse(testBefore4.isInitialized());
+
+        assertTrue(testBefore1.isInitialized());
+        assertTrue(testBefore3.isInitialized());
+        assertTrue(test.isInitialized());
+    }
+
+    @Test
+    void removeAfter() {
+        class TestInitialisable implements Initialisable {
+            private boolean initialized = false;
+            public final int id;
+
+            public TestInitialisable(int id) {
+                this.id = id;
+            }
+
+            @Override
+            public void init() {
+                initialized = true;
+            }
+
+            @Override
+            public boolean isInitialized() {
+                return initialized;
+            }
+        }
+
+        Initialisable test = new TestInitialisable(0);
+        Initialisable testBefore1 = new TestInitialisable(1);
+        Initialisable testBefore2 = new TestInitialisable(2);
+        Initialisable testBefore3 = new TestInitialisable(3);
+        Initialisable testBefore4 = new TestInitialisable(4);
+
+        Initializer.getInstance().after(test, testBefore1);
+        Initializer.getInstance().after(test, testBefore2);
+        Initializer.getInstance().after(test, testBefore3);
+        Initializer.getInstance().after(test, testBefore4);
+
+        Initializer.getInstance().removeAfter(test, testBefore2);
+        Initializer.getInstance().removeAfter(test, testBefore4);
+        Initializer.getInstance().addInitialisable(test);
+
+        Initializer.getInstance().init();
+
+        assertFalse(testBefore2.isInitialized());
+        assertFalse(testBefore4.isInitialized());
+
+        assertTrue(testBefore1.isInitialized());
+        assertTrue(testBefore3.isInitialized());
+        assertTrue(test.isInitialized());
+    }
 }
