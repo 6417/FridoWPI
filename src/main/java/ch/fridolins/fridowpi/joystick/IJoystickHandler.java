@@ -17,9 +17,13 @@ public interface IJoystickHandler extends Initialisable {
 
     void bind(JoystickBindable bindable);
 
+    void bindImediately(Binding binding, Command command);
+
     void setupJoysticks(List<IJoystickId> joystickIds);
 
     public IJoystick getJoystick(IJoystickId id);
 
     void setJoystickFactory(Function<IJoystickId, IJoystick> factory);
+
+    public void destroyAllBindings();
 }

@@ -1,5 +1,15 @@
 package ch.fridolins.fridowpi.joystick;
 
+import ch.fridolins.fridowpi.Initializer;
+import edu.wpi.first.math.Pair;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.button.Button;
+
+import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -77,7 +87,23 @@ public class JoystickHandler implements IJoystickHandler {
     }
 
     @Override
+    public void bindImediately(Binding binding, Command command) {
+        binding.action.accept(getJoystick(binding.joystickId).getButton(binding.buttonId), command);
+    }
+
+    @Override
     public void bind(JoystickBindable bindable) {
         bindAll(bindable.getMappings());
+    }
+
+    private void checkIfBindingIsInToInitialzeAndDestroy(Binding binding) {
+        if(this.toInitialize.contains(binding)) {
+            this.toInitialize.remove(binding);
+        }
+    }
+    
+    @Override
+    public void destroyAllBindings() {
+        CommandScheduler.getInstance().clearButtons();
     }
 }
