@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import ch.fridolins.fridowpi.Initializer;
+import ch.fridolins.fridowpi.initializer.Initializer;
 
 public class JoystickHandler implements IJoystickHandler {
     private static Supplier<IJoystickHandler> factory = JoystickHandler::new;

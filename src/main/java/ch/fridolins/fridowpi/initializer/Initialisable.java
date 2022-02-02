@@ -1,4 +1,4 @@
-package ch.fridolins.fridowpi.base;
+package ch.fridolins.fridowpi.initializer;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

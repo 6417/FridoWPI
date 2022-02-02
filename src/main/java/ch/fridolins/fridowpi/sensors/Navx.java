@@ -1,8 +1,8 @@
 package ch.fridolins.fridowpi.sensors;
 
 
-import ch.fridolins.fridowpi.Initializer;
-import ch.fridolins.fridowpi.base.Initialisable;
+import ch.fridolins.fridowpi.initializer.Initializer;
+import ch.fridolins.fridowpi.initializer.Initialisable;
 import ch.fridolins.fridowpi.sensors.base.INavx;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.geometry.Rotation2d;
