@@ -22,17 +22,11 @@ public class UltrasonicSensor extends Ultrasonic implements IUltrasonic {
         prevTime = timer.get();
     }
 
-    /***
-     * @return "distance in mm"
-     */
     @Override
     public double getRawDistance() {
         return super.getRangeMM();
     }
 
-    /***
-     * @return "filtered distance in mm"
-     * */
     @Override
     public double getFilteredDistance() {
         // System.out.println(timer.get() - prevTime);

@@ -13,9 +13,10 @@ public class AnalogUltrasonicSensor implements IUltrasonic, Sendable {
     private LinearFilter filter;
     double scale;
 
-    /***
-    / @param scale volts per mm
-    / */
+    /**
+     * @param channel the analog input where the sensor is connected
+     * @param scale the scale from volts to mm
+     */
     public AnalogUltrasonicSensor(int channel, double scale) {
         // this.sensor = new AnalogPotentiometer(channel);
         this.sensor = new AnalogInput(channel);
@@ -27,17 +28,11 @@ public class AnalogUltrasonicSensor implements IUltrasonic, Sendable {
         SendableRegistry.addLW(this, "AnalogUltrasonic", channel);
     }
 
-    /***
-    / @return distance in mm
-    / */
     @Override
     public double getRawDistance() {
         return sensor.getValue() * scale * (5 / RobotController.getVoltage5V());
     }
 
-    /***
-     * @return filtered distance in mm
-     * */
     @Override
     public double getFilteredDistance() {
         return filter.calculate(this.getRawDistance());

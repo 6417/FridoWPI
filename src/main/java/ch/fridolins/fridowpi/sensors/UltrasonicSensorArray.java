@@ -34,57 +34,36 @@ public class UltrasonicSensorArray implements IUltrasonicSensorArray, Sendable{
         SendableRegistry.addLW(this, "UltrasonicSensorArray", 0);
     }
 
-    /***
-     * @return raw Distance to the target in mm
-     * */
     @Override
     public double getRawDistance() {
         return (leftSensor.getFilteredDistance() + rightSensor.getFilteredDistance()) / 2;
     }
 
-    /***
-     * @return "filtered Distance to the target in mm"
-     * */
     @Override
     public double getFilteredDistance() {
         return distanceFilter.calculate(getRawDistance());
     }
 
-    /***
-     * @return "instance of the left sensor"
-     * */
     @Override
     public IUltrasonic getLeftSensor() {
         return this.leftSensor;
     }
 
-    /***
-     * @return "instance of the right sensor"
-     * */
     @Override
     public IUltrasonic getRightSensor() {
         return this.rightSensor;
     }
 
-    /***
-     * @return "raw angle to the target as Rotation2D"
-     * */
     @Override
     public Rotation2d getRawAngle() {
         return new Rotation2d(Math.atan((rightSensor.getFilteredDistance() - leftSensor.getFilteredDistance()) / this.sensorDistance));
     }
 
-    /***
-     * @return "filtered angle to the target as Rotation2D"
-     * */
     @Override
     public Rotation2d getFilteredAngle() {
         return new Rotation2d(angleFilter.calculate(getRawAngle().getRadians()));
     }
 
-    /***
-     * @return "distance between the sensors in the array in mm"
-     * */
     @Override
     public double getSensorDistance() {
         return this.sensorDistance;

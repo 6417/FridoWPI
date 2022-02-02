@@ -1,0 +1,11 @@
+ch.fridolins.fridowpi
+ch.fridolins.fridowpi.base
+ch.fridolins.fridowpi.command
+ch.fridolins.fridowpi.joystick
+ch.fridolins.fridowpi.joystick.joysticks
+ch.fridolins.fridowpi.module
+ch.fridolins.fridowpi.motors
+ch.fridolins.fridowpi.motors.utils
+ch.fridolins.fridowpi.pneumatics
+ch.fridolins.fridowpi.sensors
+ch.fridolins.fridowpi.sensors.base

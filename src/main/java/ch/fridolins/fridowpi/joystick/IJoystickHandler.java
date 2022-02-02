@@ -11,10 +11,19 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 public interface IJoystickHandler extends Initialisable {
+    /**
+     * @param bindings List of bindings to add
+     */
     void bindAll(List<Binding> bindings);
 
+    /**
+     * @param binding single binding to add
+     */
     void bind(Binding binding);
 
+    /**
+     * @param bindable
+     */
     void bind(JoystickBindable bindable);
 
     void setupJoysticks(List<IJoystickId> joystickIds);
