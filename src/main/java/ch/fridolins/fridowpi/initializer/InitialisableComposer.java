@@ -40,11 +40,7 @@ public class InitialisableComposer {
         if (queue.stream().anyMatch((n) -> n.initialisable == ini)) {
             logger.warn("Initialisable was added twice with the 'then', the last call will be used");
 
-            queue.removeAll(
-                    queue.stream()
-                            .filter((n) -> n.initialisable == ini)
-                            .collect(Collectors.toList())
-            );
+            queue.removeIf((n) -> n.initialisable == ini);
         }
         queue.add(new Node(ini));
         return this;

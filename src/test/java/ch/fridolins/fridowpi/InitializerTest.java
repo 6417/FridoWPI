@@ -1,13 +1,16 @@
 package ch.fridolins.fridowpi;
 
-import ch.fridolins.fridowpi.base.Initialisable;
-import ch.fridolins.fridowpi.base.IInitializer;
+import ch.fridolins.fridowpi.initializer.Initialisable;
+import ch.fridolins.fridowpi.initializer.IInitializer;
+import ch.fridolins.fridowpi.initializer.Initializer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ch.fridolins.fridowpi.module.Module;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -83,7 +86,8 @@ public class InitializerTest {
             }
         };
 
-        Initializer.getInstance().addInitialisable(initialisable, initialisable);
+        Initializer.getInstance().addInitialisable(initialisable);
+        Initializer.getInstance().addInitialisable(initialisable);
         assertEquals(0, initCounter.get());
         Initializer.getInstance().init();
         assertEquals(1, initCounter.get());
@@ -153,9 +157,7 @@ public class InitializerTest {
         });
 
 
-        Initializer.getInstance().before(test.get(), testBefore);
-
-        Initializer.getInstance().addInitialisable(test.get());
+        Initializer.getInstance().after(testBefore, test.get());
     }
 
     @Test
@@ -248,10 +250,8 @@ public class InitializerTest {
             }
         });
 
-        Initializer.getInstance().before(test.get(), testBefore);
+        Initializer.getInstance().after(testBefore, test.get());
         Initializer.getInstance().after(test.get(), testAfter);
-
-        Initializer.getInstance().addInitialisable(test.get());
     }
 
     @Test
@@ -287,101 +287,246 @@ public class InitializerTest {
         Initialisable test = new TestInitialisable(List.of(testAfter), List.of(testBefore));
 
 
-        Initializer.getInstance().before(test, testBefore);
+        Initializer.getInstance().after(testBefore, test);
         Initializer.getInstance().after(test, testAfter);
 
         Initializer.getInstance().addInitialisable(test);
     }
 
     @Test
-    void removeBefore() {
-        class TestInitialisable implements Initialisable {
-            private boolean initialized = false;
-            public final int id;
+    void thenComposerLinear() {
+        final int[] idCounter = {0};
 
-            public TestInitialisable(int id) {
-                this.id = id;
+        final List<Initialisable> initialized = new ArrayList<>();
+
+        class TestInitialisable implements Initialisable {
+            private boolean hasBeenInitialised = false;
+            private final int id;
+
+            public TestInitialisable() {
+                id = idCounter[0];
+                idCounter[0]++;
+            }
+
+            @Override
+            public boolean equals(Object o) {
+                if (this == o) return true;
+                if (o == null || getClass() != o.getClass()) return false;
+                TestInitialisable that = (TestInitialisable) o;
+                return id == that.id;
+            }
+
+            @Override
+            public int hashCode() {
+                return Objects.hash(id);
             }
 
             @Override
             public void init() {
-                initialized = true;
+                hasBeenInitialised = true;
+                initialized.add(this);
             }
 
             @Override
             public boolean isInitialized() {
-                return initialized;
+                return hasBeenInitialised;
             }
         }
 
-        Initialisable test = new TestInitialisable(0);
-        Initialisable testBefore1 = new TestInitialisable(1);
-        Initialisable testBefore2 = new TestInitialisable(2);
-        Initialisable testBefore3 = new TestInitialisable(3);
-        Initialisable testBefore4 = new TestInitialisable(4);
+        List<Initialisable> inits = new ArrayList<>();
 
-        Initializer.getInstance().before(test, testBefore1);
-        Initializer.getInstance().before(test, testBefore2);
-        Initializer.getInstance().before(test, testBefore3);
-        Initializer.getInstance().before(test, testBefore4);
+        for (int i = 0; i < 3; i++)
+            inits.add(new TestInitialisable());
 
-        Initializer.getInstance().removeBefore(test, testBefore2);
-        Initializer.getInstance().removeBefore(test, testBefore4);
-        Initializer.getInstance().addInitialisable(test);
+        Initializer.getInstance().addInitialisable(inits.get(0))
+                .then(inits.get(1))
+                .then(inits.get(2))
+                .close();
 
         Initializer.getInstance().init();
 
-        assertFalse(testBefore2.isInitialized());
-        assertFalse(testBefore4.isInitialized());
-
-        assertTrue(testBefore1.isInitialized());
-        assertTrue(testBefore3.isInitialized());
-        assertTrue(test.isInitialized());
+        assertSame(inits.size(), initialized.size());
+        for (int i = 0; i < initialized.size(); i++)
+            assertEquals(inits.get(i), initialized.get(i));
     }
 
     @Test
-    void removeAfter() {
-        class TestInitialisable implements Initialisable {
-            private boolean initialized = false;
-            public final int id;
+    void thenComposerAfter() {
+        final int[] idCounter = {0};
 
-            public TestInitialisable(int id) {
-                this.id = id;
+        final List<Initialisable> initialized = new ArrayList<>();
+
+        class TestInitialisable implements Initialisable {
+            private boolean hasBeenInitialised = false;
+            private final int id;
+
+            public TestInitialisable() {
+                id = idCounter[0];
+                idCounter[0]++;
+            }
+
+            @Override
+            public boolean equals(Object o) {
+                if (this == o) return true;
+                if (o == null || getClass() != o.getClass()) return false;
+                TestInitialisable that = (TestInitialisable) o;
+                return id == that.id;
+            }
+
+            @Override
+            public int hashCode() {
+                return Objects.hash(id);
             }
 
             @Override
             public void init() {
-                initialized = true;
+                hasBeenInitialised = true;
+                initialized.add(this);
             }
 
             @Override
             public boolean isInitialized() {
-                return initialized;
+                return hasBeenInitialised;
             }
         }
 
-        Initialisable test = new TestInitialisable(0);
-        Initialisable testBefore1 = new TestInitialisable(1);
-        Initialisable testBefore2 = new TestInitialisable(2);
-        Initialisable testBefore3 = new TestInitialisable(3);
-        Initialisable testBefore4 = new TestInitialisable(4);
+        List<Initialisable> inits = new ArrayList<>();
 
-        Initializer.getInstance().after(test, testBefore1);
-        Initializer.getInstance().after(test, testBefore2);
-        Initializer.getInstance().after(test, testBefore3);
-        Initializer.getInstance().after(test, testBefore4);
+        for (int i = 0; i < 7; i++)
+            inits.add(new TestInitialisable());
 
-        Initializer.getInstance().removeAfter(test, testBefore2);
-        Initializer.getInstance().removeAfter(test, testBefore4);
-        Initializer.getInstance().addInitialisable(test);
+        Initializer.getInstance().addInitialisable(inits.get(0));
+        Initializer.getInstance().addInitialisable(inits.get(1));
+        Initializer.getInstance().addInitialisable(inits.get(6));
+
+        Initializer.getInstance().after(inits.get(1), inits.get(2))
+                .then(inits.get(3))
+                .then(inits.get(4))
+                .then(inits.get(5))
+                .close();
 
         Initializer.getInstance().init();
 
-        assertFalse(testBefore2.isInitialized());
-        assertFalse(testBefore4.isInitialized());
+        assertSame(inits.size(), initialized.size());
+        for (int i = 0; i < initialized.size(); i++)
+            assertEquals(inits.get(i), initialized.get(i));
+    }
 
-        assertTrue(testBefore1.isInitialized());
-        assertTrue(testBefore3.isInitialized());
-        assertTrue(test.isInitialized());
+    @Test
+    void thenComposerAfterWithReference() {
+        final int[] idCounter = {0};
+
+        final List<Initialisable> initialized = new ArrayList<>();
+
+        class TestInitialisable implements Initialisable {
+            private boolean hasBeenInitialised = false;
+            private final int id;
+
+            public TestInitialisable() {
+                id = idCounter[0];
+                idCounter[0]++;
+            }
+
+            @Override
+            public boolean equals(Object o) {
+                if (this == o) return true;
+                if (o == null || getClass() != o.getClass()) return false;
+                TestInitialisable that = (TestInitialisable) o;
+                return id == that.id;
+            }
+
+            @Override
+            public int hashCode() {
+                return Objects.hash(id);
+            }
+
+            @Override
+            public void init() {
+                hasBeenInitialised = true;
+                initialized.add(this);
+            }
+
+            @Override
+            public boolean isInitialized() {
+                return hasBeenInitialised;
+            }
+        }
+
+        List<Initialisable> inits = new ArrayList<>();
+
+        for (int i = 0; i < 7; i++)
+            inits.add(new TestInitialisable());
+
+        Initializer.getInstance().addInitialisable(inits.get(0));
+        Initializer.getInstance().addInitialisable(inits.get(2));
+        Initializer.getInstance().addInitialisable(inits.get(4));
+        Initializer.getInstance().addInitialisable(inits.get(5));
+
+        Initializer.getInstance().after(inits.get(0), inits.get(1))
+                .then(inits.get(2))
+                .then(inits.get(3))
+                .then(inits.get(5))
+                .then(inits.get(6))
+                .close();
+
+        Initializer.getInstance().init();
+
+        assertSame(inits.size(), initialized.size());
+        for (int i = 0; i < initialized.size(); i++)
+            assertEquals(inits.get(i), initialized.get(i));
+    }
+
+    @Test
+    void thenComposerMalformedThen() {
+        final int[] idCounter = {0};
+
+        final List<Initialisable> initialized = new ArrayList<>();
+
+        class TestInitialisable implements Initialisable {
+            private boolean hasBeenInitialised = false;
+            private final int id;
+
+            public TestInitialisable() {
+                id = idCounter[0];
+                idCounter[0]++;
+            }
+
+            @Override
+            public boolean equals(Object o) {
+                if (this == o) return true;
+                if (o == null || getClass() != o.getClass()) return false;
+                TestInitialisable that = (TestInitialisable) o;
+                return id == that.id;
+            }
+
+            @Override
+            public int hashCode() {
+                return Objects.hash(id);
+            }
+
+            @Override
+            public void init() {
+                hasBeenInitialised = true;
+                initialized.add(this);
+            }
+
+            @Override
+            public boolean isInitialized() {
+                return hasBeenInitialised;
+            }
+        }
+
+        List<Initialisable> inits = new ArrayList<>();
+
+        for (int i = 0; i < 3; i++)
+            inits.add(new TestInitialisable());
+
+        Initializer.getInstance().addInitialisable(inits.get(2)).then(inits.get(0)).then(inits.get(1)).then(inits.get(2)).close();
+
+        Initializer.getInstance().init();
+
+        assertSame(inits.size(), initialized.size());
+        for (int i = 0; i < initialized.size(); i++)
+            assertEquals(inits.get(i), initialized.get(i));
     }
 }

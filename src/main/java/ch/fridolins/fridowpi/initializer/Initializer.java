@@ -31,8 +31,6 @@ public class Initializer implements IInitializer {
     }
 
     private List<Initialisable> toInitialize;
-    private Map<Initialisable, List<Initialisable>> beforeMap = new HashMap<>();
-    private Map<Initialisable, List<Initialisable>> afterMap = new HashMap<>();
 
     private final Logger logger = LogManager.getLogger(Initializer.class);
 
@@ -43,10 +41,8 @@ public class Initializer implements IInitializer {
     }
 
     private void initialize(Initialisable ini) {
-        getOrInitialize(beforeMap, ini).forEach(this::initialize);
         if (!ini.isInitialized())
             ini.init();
-        getOrInitialize(afterMap, ini).forEach(this::initialize);
     }
 
     @Override
@@ -65,7 +61,8 @@ public class Initializer implements IInitializer {
 
     @Override
     public InitialisableComposer addInitialisable(Initialisable initialisable) {
-        toInitialize.add(initialisable);
+        if (!toInitialize.contains(initialisable))
+            toInitialize.add(initialisable);
         return new InitialisableComposer(initialisable);
     }
 
@@ -77,7 +74,8 @@ public class Initializer implements IInitializer {
 
     @Override
     public InitialisableComposer after(Initialisable initialisable, Initialisable after) {
-        getOrInitialize(afterMap, initialisable).add(after);
+        if (!toInitialize.contains(initialisable))
+            toInitialize.add(initialisable);
         return new InitialisableComposer(initialisable).then(after);
     }
 
@@ -126,25 +124,26 @@ public class Initializer implements IInitializer {
                         subQueues.get(0).stream().map((n) -> n.initialisable).collect(Collectors.toList())
                 );
             else {
-                int index = getIndexAndRemoveReference(subQueues.get(0));
+                int index = getIndex(subQueues.get(0));
                 toInitialize.addAll(index + 1, nodesToInitialisables(subQueues.get(0)));
             }
-        } else if (subQueues.get(0).get(0).external) {
-            for (int i = 1; i < subQueues.size(); i++) {
-                int index = getIndexAndRemoveReference(subQueues.get(i));
-                toInitialize.addAll(index + 1, nodesToInitialisables(subQueues.get(i)));
-            }
-            int index = toInitialize.indexOf(subQueues.get(1).get(0).initialisable);
-            toInitialize.addAll(index, nodesToInitialisables(subQueues.get(0)));
         } else {
-            for (List<InitialisableComposer.Node> subQueue : subQueues) {
-                int index = getIndexAndRemoveReference(subQueue);
-                toInitialize.addAll(index + 1, nodesToInitialisables(subQueue));
+            if (!subQueues.get(0).get(0).external) {
+                subQueues = List.of(subQueues.stream().flatMap(Collection::stream).collect(Collectors.toList()));
+                for (var subQueue : subQueues) {
+                    toInitialize.removeIf((ini) -> subQueue.stream().anyMatch((n) -> n.initialisable == ini));
+                    toInitialize.addAll(nodesToInitialisables(subQueue));
+                }
+            } else {
+                for (var subQueue : subQueues) {
+                    int index = getIndex(subQueue);
+                    toInitialize.addAll(index + 1, nodesToInitialisables(subQueue));
+                }
             }
         }
     }
 
-    private int getIndexAndRemoveReference(List<InitialisableComposer.Node> subQueues) {
+    private int getIndex(List<InitialisableComposer.Node> subQueues) {
         int index = toInitialize.indexOf(subQueues.get(0).initialisable);
         subQueues.remove(0);
         return index;
