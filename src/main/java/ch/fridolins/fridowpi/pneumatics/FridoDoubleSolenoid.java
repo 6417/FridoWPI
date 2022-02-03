@@ -1,6 +1,6 @@
 package ch.fridolins.fridowpi.pneumatics;
 
-import ch.fridolins.fridowpi.Initializer;
+import ch.fridolins.fridowpi.initializer.Initializer;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
