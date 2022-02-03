@@ -1,13 +1,8 @@
 package ch.fridolins.fridowpi.joystick;
 
-import ch.fridolins.fridowpi.base.Initialisable;
-import edu.wpi.first.math.Pair;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.Button;
+import ch.fridolins.fridowpi.initializer.Initialisable;
 
 import java.util.List;
-import java.util.Map;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 public interface IJoystickHandler extends Initialisable {

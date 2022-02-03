@@ -1,4 +1,4 @@
-package ch.fridolins.fridowpi.base;
+package ch.fridolins.fridowpi.initializer;
 
 public interface Activatable {
     boolean isActivated();
