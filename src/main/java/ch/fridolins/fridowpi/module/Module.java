@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Module extends SubsystemBase implements JoystickBindable, OptionalInitialisable, IModule {
+public class Module extends SubsystemBase implements JoystickBindable, IModule {
     private Set<IModule> submodules = new HashSet<>();
 
     public Module() {
@@ -42,12 +42,6 @@ public class Module extends SubsystemBase implements JoystickBindable, OptionalI
         result.addAll(submodules);
         return result;
     }
-
-    @Override
-    public boolean isActivated() {
-        return true;
-    }
-
 
     private boolean initialized = false;
 
