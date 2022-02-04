@@ -267,4 +267,15 @@ public class FridoCanSparkMax extends CANSparkMax implements FridolinsMotor {
     public void registerSubmodule(IModule... subModule) {
         moduleProxy.registerSubmodule(subModule);
     }
+
+    private boolean initialized = false;
+    @Override
+    public void init() {
+        initialized = true;
+    }
+
+    @Override
+    public boolean isInitialized() {
+        return initialized;
+    }
 }
