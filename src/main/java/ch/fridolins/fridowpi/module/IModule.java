@@ -10,6 +10,5 @@ public interface IModule extends Subsystem, Initialisable{
     Collection<IModule> getAllSubModules();
     Collection<IModule> getSubModules();
     void registerSubmodule(IModule... subModule);
-    }
 }
 
