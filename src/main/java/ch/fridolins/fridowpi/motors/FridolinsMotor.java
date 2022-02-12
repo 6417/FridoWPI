@@ -55,4 +55,12 @@ public interface FridolinsMotor extends MotorController, IModule {
     public double getEncoderVelocity();
 
     public void configOpenLoopRamp(double rate);
+
+    default LimitSwitch getForwardLimitSwitch() {
+        return this::isForwardLimitSwitchActive;
+    }
+
+    default LimitSwitch getReverseLimitSwitch() {
+        return this::isReverseLimitSwitchActive;
+    }
 }

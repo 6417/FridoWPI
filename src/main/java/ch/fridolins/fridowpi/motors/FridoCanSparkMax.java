@@ -269,6 +269,7 @@ public class FridoCanSparkMax extends CANSparkMax implements FridolinsMotor {
     }
 
     private boolean initialized = false;
+
     @Override
     public void init() {
         initialized = true;
