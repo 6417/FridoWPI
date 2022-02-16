@@ -14,10 +14,10 @@ public class InitialisableComposer {
 
     protected static class Node {
         public Initialisable initialisable;
-        public final boolean external;
 
         Node(Initialisable initialisable) {
-            external = Initializer.getInstance().willBeInitialized(initialisable);
+            if (Initializer.getInstance().willBeInitialized(initialisable))
+                Initializer.getInstance().removeInitialisable(initialisable);
             this.initialisable = initialisable;
         }
     }
@@ -26,6 +26,9 @@ public class InitialisableComposer {
 
     protected InitialisableComposer(Initialisable initialisable) {
         queue.add(new Node(initialisable));
+    }
+
+    protected InitialisableComposer() {
     }
 
     protected static InitialisableComposer makeAfter(Initialisable after, Initialisable initialisable) {

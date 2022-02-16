@@ -1,7 +1,9 @@
 package ch.fridolins.fridowpi.initializer;
 
 public interface IInitializer extends Initialisable {
-    InitialisableComposer addInitialisable(Initialisable initialisables);
+    InitialisableComposer compose(Initialisable initialisables);
+
+    void addInitialisable(Initialisable initialisable);
 
     void removeInitialisable(Initialisable... initialisables);
 

@@ -197,7 +197,7 @@ public class InitializerTest {
 
 
         Initializer.getInstance().after(test.get(), testAfter);
-        Initializer.getInstance().addInitialisable(test.get());
+        Initializer.getInstance().compose(test.get());
     }
 
     @Test
@@ -290,7 +290,7 @@ public class InitializerTest {
         Initializer.getInstance().after(testBefore, test);
         Initializer.getInstance().after(test, testAfter);
 
-        Initializer.getInstance().addInitialisable(test);
+        Initializer.getInstance().compose(test);
     }
 
     @Test
@@ -335,12 +335,19 @@ public class InitializerTest {
 
         List<Initialisable> inits = new ArrayList<>();
 
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 4; i++)
             inits.add(new TestInitialisable());
 
-        Initializer.getInstance().addInitialisable(inits.get(0))
-                .then(inits.get(1))
-                .then(inits.get(2))
+        Initializer.getInstance().addInitialisable(inits.get(1));
+        Initializer.getInstance().addInitialisable(inits.get(0));
+        Initializer.getInstance().addInitialisable(inits.get(2));
+        Initializer.getInstance().addInitialisable(inits.get(3));
+
+        Initializer.getInstance().compose(inits.get(0))
+                .then(inits.get(1)).close();
+        Initializer.getInstance().after(inits.get(1), inits.get(2))
+                .close();
+        Initializer.getInstance().after(inits.get(2), inits.get(3))
                 .close();
 
         Initializer.getInstance().init();
@@ -403,6 +410,7 @@ public class InitializerTest {
                 .then(inits.get(3))
                 .then(inits.get(4))
                 .then(inits.get(5))
+                .then(inits.get(6))
                 .close();
 
         Initializer.getInstance().init();
@@ -466,6 +474,8 @@ public class InitializerTest {
                 .then(inits.get(2))
                 .then(inits.get(3))
                 .then(inits.get(5))
+                .close();
+        Initializer.getInstance().after(inits.get(4), inits.get(5))
                 .then(inits.get(6))
                 .close();
 
@@ -521,7 +531,7 @@ public class InitializerTest {
         for (int i = 0; i < 3; i++)
             inits.add(new TestInitialisable());
 
-        Initializer.getInstance().addInitialisable(inits.get(2)).then(inits.get(0)).then(inits.get(1)).then(inits.get(2)).close();
+        Initializer.getInstance().compose(inits.get(2)).then(inits.get(0)).then(inits.get(1)).then(inits.get(2)).close();
 
         Initializer.getInstance().init();
 
