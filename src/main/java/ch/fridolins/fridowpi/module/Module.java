@@ -1,7 +1,6 @@
 package ch.fridolins.fridowpi.module;
 
-import ch.fridolins.fridowpi.Initializer;
-import ch.fridolins.fridowpi.base.OptionalInitialisable;
+import ch.fridolins.fridowpi.initializer.Initializer;
 import ch.fridolins.fridowpi.joystick.Binding;
 import ch.fridolins.fridowpi.joystick.JoystickBindable;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -9,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Module extends SubsystemBase implements JoystickBindable, OptionalInitialisable, IModule {
+public class Module extends SubsystemBase implements JoystickBindable, IModule {
     private Set<IModule> submodules = new HashSet<>();
 
     public Module() {
@@ -42,12 +41,6 @@ public class Module extends SubsystemBase implements JoystickBindable, OptionalI
         result.addAll(submodules);
         return result;
     }
-
-    @Override
-    public boolean isActivated() {
-        return true;
-    }
-
 
     private boolean initialized = false;
 

@@ -14,12 +14,15 @@ import com.revrobotics.SparkMaxRelativeEncoder.Type;
 import ch.fridolins.fridowpi.module.Module;
 import ch.fridolins.fridowpi.module.IModule;
 
+import static java.lang.Math.abs;
+
 public class FridoCanSparkMax extends CANSparkMax implements FridolinsMotor {
     private IModule moduleProxy = new Module();
 
     SparkMaxLimitSwitch forwardLimitSwitch;
     SparkMaxLimitSwitch reverseLimitSwitch;
     SparkMaxPIDController pidController;
+    ControlType pidControlType;
     RelativeEncoder relativeEncoder;
     int ticksPerRotation;
     Optional<Integer> selectedPIDSlotIdx = Optional.empty();
@@ -222,13 +225,38 @@ public class FridoCanSparkMax extends CANSparkMax implements FridolinsMotor {
                 (acceleration) -> this.pidController.setSmartMotionMaxAccel(acceleration, pidValues.slotIdX.get()));
     }
 
+    private Optional<Double> tolerance = Optional.empty();
+
     @Override
     public void setPID(PidValues pidValues) {
         this.pidController = super.getPIDController();
+        tolerance = pidValues.tolerance;
         pidValues.slotIdX.ifPresentOrElse((slotIdx) -> setPIDWithSlotIdx(pidValues),
                 () -> setPIDWithOutSlotIdx(pidValues));
 
         setMotionMagicParametersIfNecessary(pidValues);
+    }
+
+    @Override
+    public boolean pidAtTarget() {
+        switch (pidControlType) {
+            case kDutyCycle:
+            case kVelocity:
+            case kSmartVelocity:
+                return abs(getEncoderVelocity() - tolerance.orElse(0.0)) < tolerance.orElse(0.0);
+
+            case kVoltage:
+                return abs(super.getBusVoltage() - tolerance.orElse(0.0)) < tolerance.orElse(0.0);
+
+            case kPosition:
+            case kSmartMotion:
+                return abs(getEncoderTicks() - tolerance.orElse(0.0)) < tolerance.orElse(0.0);
+
+            case kCurrent:
+                return abs(getOutputCurrent() - tolerance.orElse(0.0)) < tolerance.orElse(0.0);
+            default:
+                return true;
+        }
     }
 
     private void setPIDWithOutSlotIdx(PidValues pidValues) {
@@ -236,6 +264,7 @@ public class FridoCanSparkMax extends CANSparkMax implements FridolinsMotor {
         this.pidController.setI(pidValues.kI);
         this.pidController.setD(pidValues.kD);
         pidValues.kF.ifPresent((kF) -> this.pidController.setFF(kF));
+        tolerance = pidValues.tolerance;
         this.pidController.setOutputRange(pidValues.peakOutputReverse, pidValues.peakOutputForward);
     }
 
@@ -266,5 +295,17 @@ public class FridoCanSparkMax extends CANSparkMax implements FridolinsMotor {
     @Override
     public void registerSubmodule(IModule... subModule) {
         moduleProxy.registerSubmodule(subModule);
+    }
+
+    private boolean initialized = false;
+
+    @Override
+    public void init() {
+        initialized = true;
+    }
+
+    @Override
+    public boolean isInitialized() {
+        return initialized;
     }
 }

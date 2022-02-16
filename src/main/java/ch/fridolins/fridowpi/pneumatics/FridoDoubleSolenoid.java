@@ -1,5 +1,6 @@
 package ch.fridolins.fridowpi.pneumatics;
 
+import ch.fridolins.fridowpi.initializer.Initializer;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
@@ -13,6 +14,7 @@ public class FridoDoubleSolenoid implements IDoubleSolenoid {
     public FridoDoubleSolenoid(int lowerId, int higherId) {
         this.lowerId = lowerId;
         this.higherId = higherId;
+        Initializer.getInstance().addInitialisable(this);
     }
 
     @Override

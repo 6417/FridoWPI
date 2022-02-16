@@ -1,10 +1,12 @@
 package ch.fridolins.fridowpi.sensors.base;
 
+import ch.fridolins.fridowpi.initializer.Initialisable;
+import ch.fridolins.fridowpi.initializer.Initializer;
 import com.kauailabs.navx.frc.AHRS;
 import com.kauailabs.navx.frc.ITimestampedDataSubscriber;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 
-public interface INavx extends Gyro {
+public interface INavx extends Gyro, Initialisable {
 
     float getPitch();
 

@@ -34,6 +34,8 @@ public interface FridolinsMotor extends MotorController, IModule {
      */
     public void setPID(PidValues pidValues);
 
+    public boolean pidAtTarget();
+
     /**
      * @param velocity velocity for the motor to target
      */
@@ -109,4 +111,12 @@ public interface FridolinsMotor extends MotorController, IModule {
      * @param rate the rate of the motor to accelerate in open loop control
      */
     public void configOpenLoopRamp(double rate);
+
+    default LimitSwitch getForwardLimitSwitch() {
+        return this::isForwardLimitSwitchActive;
+    }
+
+    default LimitSwitch getReverseLimitSwitch() {
+        return this::isReverseLimitSwitchActive;
+    }
 }

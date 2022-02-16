@@ -1,8 +1,8 @@
 package ch.fridolins.fridowpi.sensors;
 
 
-import ch.fridolins.fridowpi.Initializer;
-import ch.fridolins.fridowpi.base.Initialisable;
+import ch.fridolins.fridowpi.initializer.Initializer;
+import ch.fridolins.fridowpi.initializer.Initialisable;
 import ch.fridolins.fridowpi.sensors.base.INavx;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -12,7 +12,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.function.Function;
 
-public class Navx extends AHRS implements INavx, Initialisable {
+public class Navx extends AHRS implements INavx {
     private static Function<SPI.Port, INavx> factory = Navx::new;
 
     private static SPI.Port port;
