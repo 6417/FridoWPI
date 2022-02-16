@@ -21,6 +21,8 @@ public interface FridolinsMotor extends MotorController, IModule {
 
     public void setPID(PidValues pidValues);
 
+    public boolean pidAtTarget();
+
     public void setVelocity(double velocity);
 
     public void setPosition(double position);

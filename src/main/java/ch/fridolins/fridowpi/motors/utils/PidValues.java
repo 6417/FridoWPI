@@ -14,6 +14,7 @@ public class PidValues {
     public double peakOutputForward = 1;
     public Optional<Double> cruiseVelocity = Optional.empty();
     public Optional<Double> acceleration = Optional.empty();
+    public Optional<Double> tolerance = Optional.empty();
 
     public PidValues(double kP, double kI, double kD) {
         this.kP = kP;
@@ -56,6 +57,10 @@ public class PidValues {
      */
     public void setAcceleration(double acceleration) {
         this.acceleration = Optional.of(acceleration);
+    }
+
+    public void setTolerance(double tolerance) {
+        this.tolerance = Optional.of(tolerance);
     }
 
     @Override

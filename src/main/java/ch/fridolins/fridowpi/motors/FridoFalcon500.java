@@ -15,8 +15,9 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import ch.fridolins.fridowpi.module.IModule;
 import ch.fridolins.fridowpi.module.Module;
 
-public class FridoFalcon500 extends TalonFX implements FridolinsMotor {
+import static java.lang.Math.abs;
 
+public class FridoFalcon500 extends TalonFX implements FridolinsMotor {
     Module moduleProxy = new Module();
     Optional<Integer> pidSlotIdx;
 
@@ -147,6 +148,8 @@ public class FridoFalcon500 extends TalonFX implements FridolinsMotor {
         super.configOpenloopRamp(rate);
     }
 
+    public Optional<Double> tolerance;
+
     @Override
     public void setPID(PidValues pidValues) {
         if (!pidSlotIdx.isPresent()) {
@@ -158,6 +161,15 @@ public class FridoFalcon500 extends TalonFX implements FridolinsMotor {
         pidValues.kF.ifPresent((kF) -> {
             super.config_kF(pidSlotIdx.get(), pidValues.kF.get());
         });
+        pidValues.tolerance.ifPresent((tolerance) ->
+                super.configAllowableClosedloopError(pidSlotIdx.get(), tolerance)
+        );
+        tolerance = pidValues.tolerance;
+    }
+
+    @Override
+    public boolean pidAtTarget() {
+        return abs(super.getClosedLoopError() - tolerance.orElse(0.0)) < tolerance.orElse(0.0);
     }
 
     private NeutralMode convertFromFridoIdleMode(IdleMode mode) {
