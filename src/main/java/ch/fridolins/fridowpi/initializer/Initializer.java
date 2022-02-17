@@ -17,15 +17,26 @@ public class Initializer implements IInitializer {
     private static IInitializer instance;
     private static Supplier<IInitializer> factory = Initializer::new;
 
+    /**
+     * resets the instance returned by {@link #getInstance}
+     */
     public static void reset() {
         instance = null;
     }
 
+    /**
+     * set the method used to create a new instance, is used if a custom Initializer is used
+     *
+     * @param fact function that constructs a new Initializer
+     */
     public static void setFactory(Supplier<IInitializer> fact) {
         assert instance == null : "can't set factory, instance has already been initialized";
         factory = fact;
     }
 
+    /**
+     * @return the current Initializer
+     */
     public static IInitializer getInstance() {
         if (instance == null)
             instance = factory.get();
