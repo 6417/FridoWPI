@@ -10,6 +10,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * With a {@link InitialisableComposer} you can define in which order
+ * the {@code Initialisable}s should be initialized.
+ *
+ * Example:
+ *    - @code Initializer.getInstance().compose(i1).then(i2).close();
+ * means that {@code i1} will be initialized before {@code i2}
+ * the {@link #close} is used to add everything to the {@link Initializer}
+ * <br>
+ * <strong>You have to call {@link #close} or the initialisables won't be added</strong>
+ */
 public class InitialisableComposer {
 
     protected static class Node {
@@ -39,6 +50,11 @@ public class InitialisableComposer {
 
     private final Logger logger = LogManager.getLogger(InitialisableComposer.class);
 
+    /**
+     * Adds {@code ini} to the queue
+     * @param ini
+     * @return a composer on which you can call "{@code then}" again
+     */
     public InitialisableComposer then(Initialisable ini) {
         if (queue.stream().anyMatch((n) -> n.initialisable == ini)) {
             logger.warn("Initialisable was added twice with the 'then', the last call will be used");
@@ -49,10 +65,16 @@ public class InitialisableComposer {
         return this;
     }
 
+    /**
+     * @return All initialisables that are in the composer, this list is <strong>Not ordered</strong>
+     */
     protected List<Node> getQueue() {
         return queue;
     }
 
+    /**
+     * Add the queue to the {@link Initializer}
+     */
     public void close() {
         Initializer.getInstance().addComposer(this);
     }
