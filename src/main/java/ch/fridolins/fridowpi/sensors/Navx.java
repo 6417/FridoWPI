@@ -116,12 +116,12 @@ public class Navx extends AHRS implements INavx {
 
     @Override
     public float getPitch() {
-        return super.getYaw() + pitchOffset;
+        return super.getPitch() + pitchOffset;
     }
 
     @Override
     public float getRoll() {
-        return super.getYaw() + rollOffset;
+        return super.getRoll() + rollOffset;
     }
 
     @Override
