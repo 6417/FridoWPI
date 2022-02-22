@@ -1,7 +1,6 @@
 package ch.fridolins.fridowpi.module;
 
 import ch.fridolins.fridowpi.initializer.Initializer;
-import ch.fridolins.fridowpi.initializer.OptionalInitialisable;
 import ch.fridolins.fridowpi.joystick.Binding;
 import ch.fridolins.fridowpi.joystick.JoystickBindable;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;

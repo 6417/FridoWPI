@@ -12,6 +12,8 @@ public class Initializer implements IInitializer {
         toInitialize = new LinkedList<>();
     }
 
+    InitialisableComposer composer = new InitialisableComposer();
+
     private static IInitializer instance;
     private static Supplier<IInitializer> factory = Initializer::new;
 
@@ -47,6 +49,21 @@ public class Initializer implements IInitializer {
 
     @Override
     public void init() {
+        List<InitialisableComposer.Node> queue = composer.getQueue();
+        List<List<InitialisableComposer.Node>> subQueues = splitQueue(queue);
+
+        if (subQueues.size() == 1) {
+            toInitialize.addAll(
+                    subQueues.get(0).stream().map((n) -> n.initialisable).collect(Collectors.toList())
+            );
+        } else {
+            subQueues = List.of(subQueues.stream().flatMap(Collection::stream).collect(Collectors.toList()));
+            for (var subQueue : subQueues) {
+                toInitialize.removeIf((ini) -> subQueue.stream().anyMatch((n) -> n.initialisable == ini));
+                toInitialize.addAll(nodesToInitialisables(subQueue));
+            }
+        }
+
         toInitialize.forEach(this::initialize);
         toInitialize.clear();
     }
@@ -60,10 +77,13 @@ public class Initializer implements IInitializer {
     }
 
     @Override
-    public InitialisableComposer addInitialisable(Initialisable initialisable) {
-        if (!toInitialize.contains(initialisable))
-            toInitialize.add(initialisable);
+    public InitialisableComposer compose(Initialisable initialisable) {
         return new InitialisableComposer(initialisable);
+    }
+
+    @Override
+    public void addInitialisable(Initialisable initialisable) {
+        toInitialize.add(initialisable);
     }
 
     @Override
@@ -101,7 +121,7 @@ public class Initializer implements IInitializer {
         int i = 0;
         for (int j = 0; j < queue.size() - 1; j++) {
             result.get(i).add(queue.get(j));
-            if (queue.get(j + 1).external) {
+            if (willBeInitialized(queue.get(j + 1).initialisable)) {
                 i++;
                 result.add(new ArrayList<>());
             }
@@ -112,35 +132,7 @@ public class Initializer implements IInitializer {
 
     @Override
     public void addComposer(InitialisableComposer initialisableComposer) {
-        List<InitialisableComposer.Node> queue = initialisableComposer.getQueue();
-        List<List<InitialisableComposer.Node>> subQueues = splitQueue(queue);
-
-        if (subQueues.stream().allMatch((q) -> q.size() == 0))
-            return;
-
-        if (subQueues.size() == 1) {
-            if (!subQueues.get(0).get(0).external)
-                toInitialize.addAll(
-                        subQueues.get(0).stream().map((n) -> n.initialisable).collect(Collectors.toList())
-                );
-            else {
-                int index = getIndex(subQueues.get(0));
-                toInitialize.addAll(index + 1, nodesToInitialisables(subQueues.get(0)));
-            }
-        } else {
-            if (!subQueues.get(0).get(0).external) {
-                subQueues = List.of(subQueues.stream().flatMap(Collection::stream).collect(Collectors.toList()));
-                for (var subQueue : subQueues) {
-                    toInitialize.removeIf((ini) -> subQueue.stream().anyMatch((n) -> n.initialisable == ini));
-                    toInitialize.addAll(nodesToInitialisables(subQueue));
-                }
-            } else {
-                for (var subQueue : subQueues) {
-                    int index = getIndex(subQueue);
-                    toInitialize.addAll(index + 1, nodesToInitialisables(subQueue));
-                }
-            }
-        }
+        initialisableComposer.getQueue().stream().map((node) -> node.initialisable).forEach(composer::then);
     }
 
     private int getIndex(List<InitialisableComposer.Node> subQueues) {
