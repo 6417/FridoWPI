@@ -25,6 +25,7 @@ public class FridoCanSparkMax extends CANSparkMax implements FridolinsMotor {
     ControlType pidControlType;
     RelativeEncoder relativeEncoder;
     int ticksPerRotation;
+    double setPoint;
     Optional<Integer> selectedPIDSlotIdx = Optional.empty();
 
     public FridoCanSparkMax(int deviceId, MotorType type) {
@@ -37,6 +38,8 @@ public class FridoCanSparkMax extends CANSparkMax implements FridolinsMotor {
             selectedPIDSlotIdx.ifPresentOrElse(
                     (slotIdx) -> pidController.setReference(position, ControlType.kPosition, slotIdx),
                     () -> pidController.setReference(position, ControlType.kPosition));
+            setPoint = position;
+            pidControlType = ControlType.kPosition;
         } else {
             try {
                 throw new Exception("PID Controller not initialized");
@@ -52,6 +55,8 @@ public class FridoCanSparkMax extends CANSparkMax implements FridolinsMotor {
             selectedPIDSlotIdx.ifPresentOrElse(
                     (slotIdx) -> pidController.setReference(velocity, ControlType.kVelocity, slotIdx),
                     () -> pidController.setReference(velocity, ControlType.kVelocity));
+            setPoint = velocity;
+            pidControlType = ControlType.kVelocity;
         } else {
             try {
                 throw new Exception("PID Controller not initialized");
@@ -243,14 +248,14 @@ public class FridoCanSparkMax extends CANSparkMax implements FridolinsMotor {
             case kDutyCycle:
             case kVelocity:
             case kSmartVelocity:
-                return abs(getEncoderVelocity() - tolerance.orElse(0.0)) < tolerance.orElse(0.0);
+                return abs(setPoint - getEncoderVelocity()) < tolerance.orElse(0.0);
 
             case kVoltage:
                 return abs(super.getBusVoltage() - tolerance.orElse(0.0)) < tolerance.orElse(0.0);
 
             case kPosition:
             case kSmartMotion:
-                return abs(getEncoderTicks() - tolerance.orElse(0.0)) < tolerance.orElse(0.0);
+                return abs(setPoint - getEncoderTicks()) < tolerance.orElse(0.0);
 
             case kCurrent:
                 return abs(getOutputCurrent() - tolerance.orElse(0.0)) < tolerance.orElse(0.0);
