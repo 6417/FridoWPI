@@ -68,6 +68,8 @@ public interface FridolinsMotor extends MotorController, IModule {
 
     public void configOpenLoopRamp(double rate);
 
+    public double getPidTarget();
+
     default LimitSwitch getForwardLimitSwitch() {
         return this::isForwardLimitSwitchActive;
     }

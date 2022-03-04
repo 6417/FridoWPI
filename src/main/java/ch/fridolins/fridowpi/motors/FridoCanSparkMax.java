@@ -24,7 +24,6 @@ public class FridoCanSparkMax extends CANSparkMax implements FridolinsMotor {
     SparkMaxPIDController pidController;
     ControlType pidControlType;
     RelativeEncoder relativeEncoder;
-    int ticksPerRotation;
     double setPoint;
     Optional<Integer> selectedPIDSlotIdx = Optional.empty();
 
@@ -68,6 +67,7 @@ public class FridoCanSparkMax extends CANSparkMax implements FridolinsMotor {
 
     @Override
     public void setPidTarget(double value, PidType type) {
+        setPoint = value;
         pidControlType = pidTypeToSparkControlType(type);
         pidController.setReference(value, pidControlType);
     }
@@ -244,6 +244,11 @@ public class FridoCanSparkMax extends CANSparkMax implements FridolinsMotor {
         super.setOpenLoopRampRate(rate);
     }
 
+    @Override
+    public double getPidTarget() {
+        return setPoint;
+    }
+
     private void setMotionMagicParametersIfNecessary(PidValues pidValues) {
 //        if (pidValues.cruiseVelocity.isPresent() || pidValues.acceleration.isPresent())
 //            assert pidValues.slotIdX.isPresent() : "To set cruiseVelocity or acceleration slotIdx needs to be set";
@@ -274,14 +279,14 @@ public class FridoCanSparkMax extends CANSparkMax implements FridolinsMotor {
                 return abs(setPoint - getEncoderVelocity()) < tolerance.orElse(0.0);
 
             case kVoltage:
-                return abs(super.getBusVoltage() - tolerance.orElse(0.0)) < tolerance.orElse(0.0);
+                return abs(super.getBusVoltage() - setPoint) < tolerance.orElse(0.0);
 
             case kPosition:
             case kSmartMotion:
                 return abs(setPoint - getEncoderTicks()) < tolerance.orElse(0.0);
 
             case kCurrent:
-                return abs(getOutputCurrent() - tolerance.orElse(0.0)) < tolerance.orElse(0.0);
+                return abs(getOutputCurrent() - setPoint) < tolerance.orElse(0.0);
             default:
                 return true;
         }
