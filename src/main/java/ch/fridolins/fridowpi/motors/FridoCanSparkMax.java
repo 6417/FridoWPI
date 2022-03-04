@@ -49,6 +49,29 @@ public class FridoCanSparkMax extends CANSparkMax implements FridolinsMotor {
         }
     }
 
+    private ControlType pidTypeToSparkControlType(PidType type) {
+        switch (type) {
+            case velocity:
+                return ControlType.kVelocity;
+            case voltage:
+                return ControlType.kVoltage;
+            case position:
+                return ControlType.kPosition;
+            case smartMotion:
+                return ControlType.kSmartMotion;
+            case smartVelocity:
+                return ControlType.kSmartVelocity;
+            default:
+                return null;
+        }
+    }
+
+    @Override
+    public void setPidTarget(double value, PidType type) {
+        pidControlType = pidTypeToSparkControlType(type);
+        pidController.setReference(value, pidControlType);
+    }
+
     @Override
     public void setVelocity(double velocity) {
         if (this.pidController != null) {
@@ -222,12 +245,12 @@ public class FridoCanSparkMax extends CANSparkMax implements FridolinsMotor {
     }
 
     private void setMotionMagicParametersIfNecessary(PidValues pidValues) {
-        if (pidValues.cruiseVelocity.isPresent() || pidValues.acceleration.isPresent())
-            assert pidValues.slotIdX.isPresent() : "To set cruiseVelocity or acceleration slotIdx needs to be set";
+//        if (pidValues.cruiseVelocity.isPresent() || pidValues.acceleration.isPresent())
+//            assert pidValues.slotIdX.isPresent() : "To set cruiseVelocity or acceleration slotIdx needs to be set";
         pidValues.cruiseVelocity.ifPresent((cruiseVelocity) -> this.pidController
-                .setSmartMotionMaxVelocity(cruiseVelocity, pidValues.slotIdX.get()));
+                .setSmartMotionMaxVelocity(cruiseVelocity, pidValues.slotIdX.orElse(selectedPIDSlotIdx.orElse(0))));
         pidValues.acceleration.ifPresent(
-                (acceleration) -> this.pidController.setSmartMotionMaxAccel(acceleration, pidValues.slotIdX.get()));
+                (acceleration) -> this.pidController.setSmartMotionMaxAccel(acceleration, pidValues.slotIdX.orElse(selectedPIDSlotIdx.orElse(0))));
     }
 
     private Optional<Double> tolerance = Optional.empty();

@@ -109,6 +109,12 @@ public class FridoFalcon500 extends TalonFX implements FridolinsMotor {
     }
 
     @Override
+    public void setPidTarget(double value, PidType type) {
+        // TODO: implement this function
+        assert false : "Not implemented";
+    }
+
+    @Override
     public void selectPidSlot(int slotIndex) {
         this.pidSlotIdx = Optional.of(slotIndex);
     }

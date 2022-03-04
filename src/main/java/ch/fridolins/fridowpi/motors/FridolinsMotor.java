@@ -13,6 +13,14 @@ public interface FridolinsMotor extends MotorController, IModule {
         followMaster, invertMaster
     }
 
+    public enum PidType {
+        velocity,
+        voltage,
+        position,
+        smartMotion,
+        smartVelocity;
+    }
+
     public void setIdleMode(IdleMode type);
 
     public void follow(FridolinsMotor master, DirectionType direction);
@@ -26,6 +34,8 @@ public interface FridolinsMotor extends MotorController, IModule {
     public void setVelocity(double velocity);
 
     public void setPosition(double position);
+
+    public void setPidTarget(double value, PidType type);
 
     public void selectPidSlot(int slotIndex);
 
