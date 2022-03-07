@@ -1,5 +1,11 @@
 package ch.fridolins.fridowpi.utils;
 
 public interface LatchedBoolean {
-    boolean updateAndGet(boolean val);
+    default boolean updateAndGet(boolean val) {
+        update(val);
+        return  get();
+    }
+
+    boolean get();
+    void update(boolean val);
 }
