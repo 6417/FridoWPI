@@ -154,6 +154,11 @@ public class FridoFalcon500 extends TalonFX implements FridolinsMotor {
         super.configOpenloopRamp(rate);
     }
 
+    @Override
+    public double getPidTarget() {
+        throw new Error("Not implemented");
+    }
+
     public Optional<Double> tolerance;
 
     @Override
