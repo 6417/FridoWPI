@@ -1,11 +1,12 @@
 package ch.fridolins.fridowpi.motors;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 import ch.fridolins.fridowpi.motors.utils.PidValues;
 
-import com.fasterxml.jackson.databind.ser.std.StdKeySerializers.Default;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxLimitSwitch;
@@ -17,6 +18,8 @@ import ch.fridolins.fridowpi.module.IModule;
 import static java.lang.Math.abs;
 
 public class FridoCanSparkMax extends CANSparkMax implements FridolinsMotor {
+    public static List<FridoCanSparkMax> allMotorsWithShitySoftware = new ArrayList<>();
+
     private IModule moduleProxy = new Module();
 
     SparkMaxLimitSwitch forwardLimitSwitch;
@@ -29,6 +32,7 @@ public class FridoCanSparkMax extends CANSparkMax implements FridolinsMotor {
 
     public FridoCanSparkMax(int deviceId, MotorType type) {
         super(deviceId, type);
+        allMotorsWithShitySoftware.add(this);
     }
 
     @Override
